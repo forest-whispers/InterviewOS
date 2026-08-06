@@ -28,6 +28,14 @@ model User {
   @@index([email])
 }
 
+enum ExperienceLevel {
+  STUDENT
+  FRESHER
+  JUNIOR
+  MID
+  SENIOR
+}
+
 model CandidateProfile {
   id String @id @default(cuid())
 
@@ -42,14 +50,123 @@ model CandidateProfile {
 
   interviewsTaken Int @default(0)
 
+  resumeSummary String?
+
+  topSkills Json?
+
+  currentResumeId String? @unique
+
+  currentResume Resume? @relation("CurrentResume", fields: [currentResumeId], references: [id])
+
+  resumes Resume[] @relation("CandidateResumes")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum ExperienceLevel {
-  STUDENT
-  FRESHER
-  JUNIOR
-  MID
-  SENIOR
+enum SkillCategory {
+  LANGUAGE
+  FRONTEND
+  BACKEND
+  DATABASE
+  DEVOPS
+  CLOUD
+  AI_ML
+  TOOLS
+  OTHER
+}
+
+model ResumeSkill {
+  id String @id @default(cuid())
+
+  resumeId String
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  name String
+
+  category SkillCategory?
+
+  confidence Float?
+
+  @@index([resumeId])
+  @@index([name])
+}
+
+model ResumeProject {
+  id String @id @default(cuid())
+
+  resumeId String
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  name String
+
+  description String?
+
+  technologies Json
+
+  createdAt DateTime @default(now())
+
+  @@index([resumeId])
+}
+
+model ResumeEducation {
+  id String @id @default(cuid())
+
+  resumeId String
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  institution String
+
+  degree String?
+
+  fieldOfStudy String?
+
+  graduationYear Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([resumeId])
+}
+
+enum ResumeStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+model Resume {
+  id String @id @default(cuid())
+
+  candidateId String
+
+  candidate CandidateProfile @relation("CandidateResumes", fields: [candidateId], references: [id], onDelete: Cascade)
+
+  currentForCandidate CandidateProfile? @relation("CurrentResume")
+
+  fileName String
+
+  fileUrl String
+
+  publicId String
+
+  rawText String
+
+  summary String
+
+  status ResumeStatus @default(PROCESSING)
+
+  uploadedAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  skills ResumeSkill[]
+
+  projects ResumeProject[]
+
+  educations ResumeEducation[]
+
+  @@index([candidateId])
 }
