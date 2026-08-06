@@ -12,6 +12,9 @@ const envSchema = z.object({
 
     AUTH_SECRET: z.string(),
 
+    UPSTASH_REDIS_REST_URL: z.string(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
+
     NEXTAUTH_URL: z.string().url(),
 });
 
