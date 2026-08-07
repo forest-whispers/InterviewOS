@@ -6,26 +6,13 @@ import {
     deleteList,
 } from "@/server/shared/redis/list";
 
-import { makeKey } from "@/server/shared/redis/keys";
-
 import { TTL } from "@/server/shared/redis/ttl";
-
-import { prisma } from "@/server/config/db";
 
 import type {
     TranscriptMessage
 } from "./interview.transcript.types";
 import { Prisma } from "@prisma/client";
-
-function transcriptKey(
-    sessionId: string
-) {
-    return makeKey(
-        "interview",
-        sessionId,
-        "transcript"
-    );
-}
+import { transcriptKey } from "./interview.transcript.redis";
 
 interface AppendTranscriptInput {
     sessionId: string;
@@ -81,46 +68,38 @@ export async function clearTranscript(
     );
 }
 
-export async function persistTranscript(
+export async function getTranscriptPersistenceData(
     sessionId: string
-) {
+): Promise<
+    Prisma.InterviewMessageCreateManyInput[]
+> {
     const transcript =
         await getTranscript(sessionId);
 
-    if (!transcript.length) {
-        return;
-    }
+    return transcript.map(
+        (message) => ({
+            id: message.id,
 
-    await prisma.interviewMessage.createMany({
-        data: transcript.map(
-            (message) => ({
-                id: message.id,
+            interviewSessionId:
+                sessionId,
 
-                interviewSessionId:
-                    sessionId,
+            role:
+                message.role ===
+                    "assistant"
+                    ? "ASSISTANT"
+                    : "USER",
 
-                role:
-                    message.role ===
-                        "assistant"
-                        ? "ASSISTANT"
-                        : "USER",
+            content:
+                message.content,
 
-                content:
-                    message.content,
+            metadata: message.metadata
+                ? (message.metadata as Prisma.InputJsonValue)
+                : undefined,
 
-                metadata: message.metadata
-                    ? (message.metadata as Prisma.InputJsonValue)
-                    : undefined,
-
-                createdAt:
-                    new Date(
-                        message.createdAt
-                    ),
-            })
-        ),
-    });
-
-    await clearTranscript(
-        sessionId
+            createdAt:
+                new Date(
+                    message.createdAt
+                ),
+        })
     );
 }

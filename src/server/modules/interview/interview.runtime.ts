@@ -3,8 +3,8 @@ import type {
 } from "./interview.types";
 
 import type {
-    TurnEvaluation,
-} from "./interview.evaluation.types";
+    TurnEvaluation
+} from "./evaluation/interview.evaluation.types";
 import { GeneratedInterviewQuestion } from "./question/interview.question.types";
 
 export function updateRuntimeObservations(

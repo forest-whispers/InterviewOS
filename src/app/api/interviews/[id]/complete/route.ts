@@ -9,10 +9,7 @@ import { ok } from "@/server/shared/http/response";
 import {
     UnauthorizedError,
 } from "@/server/shared/errors/errors";
-
-import {
-    startInterview,
-} from "@/server/modules/interview/interview.start.service";
+import { completeInterview } from "@/server/modules/interview/interview.complete.service";
 
 export const POST = createRouteHandler(
     async (
@@ -30,16 +27,13 @@ export const POST = createRouteHandler(
         const { id } =
             await context.params;
 
-        const interview =
-            await startInterview({
+        const artifact =
+            await completeInterview({
                 sessionId: id,
             });
 
         return ok({
-            message:
-                "Interview started successfully.",
-
-            interview,
+            evaluation: artifact,
         });
     }
 );

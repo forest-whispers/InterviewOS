@@ -162,15 +162,15 @@ model Resume {
 
   interviews InterviewSession[]
 
-  uploadedAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
-
   skills ResumeSkill[]
 
   projects ResumeProject[]
 
   educations ResumeEducation[]
+
+  uploadedAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
 
   @@index([candidateId])
 }
@@ -179,7 +179,7 @@ enum InterviewStatus {
   CREATED
   IN_PROGRESS
   COMPLETED
-  CANCELLED
+  ABANDONED
 }
 
 model InterviewSession {
@@ -199,6 +199,10 @@ model InterviewSession {
 
   metadata Json?
 
+  messages InterviewMessage[]
+
+  evaluation InterviewEvaluation?
+
   startedAt DateTime?
 
   completedAt DateTime?
@@ -206,8 +210,6 @@ model InterviewSession {
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
-
-  messages InterviewMessage[]
 
   @@index([candidateId])
   @@index([resumeId])
@@ -236,5 +238,26 @@ model InterviewMessage {
   createdAt DateTime @default(now())
 
   @@index([interviewSessionId])
+  @@index([createdAt])
+}
+
+model InterviewEvaluation {
+  id String @id @default(cuid())
+
+  interviewSessionId String @unique
+
+  interviewSession InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
+
+  overallScore Float
+
+  technicalScore Float
+
+  communicationScore Float
+
+  artifact Json
+
+  createdAt DateTime @default(now())
+
+  @@index([overallScore])
   @@index([createdAt])
 }

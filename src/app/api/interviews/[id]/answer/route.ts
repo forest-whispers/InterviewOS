@@ -4,7 +4,7 @@ import { auth } from "@/server/modules/auth/auth";
 
 import {
     submitAnswer,
-} from "@/server/modules/interview/interview.service";
+} from "@/server/modules/interview/interview.submit.service";
 
 import {
     submitAnswerSchema,

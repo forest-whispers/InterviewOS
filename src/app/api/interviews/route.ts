@@ -12,7 +12,7 @@ import { UnauthorizedError } from "@/server/shared/errors/errors";
 
 import { createInterviewSchema } from "@/server/modules/interview/interview.validation";
 
-import { createInterview } from "@/server/modules/interview/interview.service";
+import { createInterview } from "@/server/modules/interview/interview.start.service";
 
 export const POST = createRouteHandler(
     async (request: NextRequest) => {

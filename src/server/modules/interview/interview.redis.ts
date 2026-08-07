@@ -61,7 +61,7 @@ export async function getInterviewState(
     );
 }
 
-export async function deleteInterviewState(
+export async function clearInterviewState(
     sessionId: string
 ) {
     await deleteKey(
@@ -88,7 +88,7 @@ export async function getCandidateSnapshot(
     );
 }
 
-export async function deleteCandidateSnapshot(
+export async function clearCandidateSnapshot(
     sessionId: string
 ) {
     await deleteKey(
