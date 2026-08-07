@@ -2,6 +2,7 @@ import {
     ExperienceLevel,
     Prisma,
 } from "@prisma/client";
+import { GeneratedInterviewQuestion } from "./interview.question.types";
 
 export interface WeaknessSummary {
     topic: string;
@@ -85,7 +86,7 @@ export interface InterviewState {
 
     interviewPlan: InterviewPlan;
 
-    currentQuestion: string | null;
+    currentQuestion: GeneratedInterviewQuestion | null;
 
     questionNumber: number;
 
