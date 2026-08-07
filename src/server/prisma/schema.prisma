@@ -60,6 +60,8 @@ model CandidateProfile {
 
   resumes Resume[] @relation("CandidateResumes")
 
+  interviews InterviewSession[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -158,6 +160,8 @@ model Resume {
 
   status ResumeStatus @default(PROCESSING)
 
+  interviews InterviewSession[]
+
   uploadedAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
@@ -169,4 +173,66 @@ model Resume {
   educations ResumeEducation[]
 
   @@index([candidateId])
+}
+
+enum InterviewStatus {
+  CREATED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model InterviewSession {
+  id String @id @default(cuid())
+
+  candidateId String
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  resumeId String
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Restrict)
+
+  status InterviewStatus @default(CREATED)
+
+  interviewPlan Json
+
+  metadata Json?
+
+  startedAt DateTime?
+
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  messages InterviewMessage[]
+
+  @@index([candidateId])
+  @@index([resumeId])
+  @@index([status])
+}
+
+enum InterviewMessageRole {
+  ASSISTANT
+  USER
+  SYSTEM
+}
+
+model InterviewMessage {
+  id String @id @default(cuid())
+
+  interviewSessionId String
+
+  interviewSession InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
+
+  role InterviewMessageRole
+
+  content String
+
+  createdAt DateTime @default(now())
+
+  @@index([interviewSessionId])
+  @@index([createdAt])
 }

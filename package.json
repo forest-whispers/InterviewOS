@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "prisma": {
+    "schema": "src/server/prisma/schema.prisma"
+  },
   "dependencies": {
     "@ai-sdk/google": "^4.0.36",
     "@auth/prisma-adapter": "^2.11.3",

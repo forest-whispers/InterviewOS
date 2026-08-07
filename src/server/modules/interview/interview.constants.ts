@@ -1,0 +1,7 @@
+export const INTERVIEW_CONSTANTS = {
+    DEFAULT_DIFFICULTY: "medium",
+
+    DEFAULT_QUESTION_COUNT: 10,
+
+    SESSION_TTL_SECONDS: 60 * 60 * 2,
+} as const;

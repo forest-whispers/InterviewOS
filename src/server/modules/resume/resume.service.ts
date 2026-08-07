@@ -206,8 +206,10 @@ export async function uploadResume({
         topSkills:
             result.parsedResume.topSkills,
 
+        skills: result.parsedResume.skills,
+
         projects: result.parsedResume.projects,
 
-        educations: result.parsedResume.education
+        educations: result.parsedResume.education,
     };
 }
