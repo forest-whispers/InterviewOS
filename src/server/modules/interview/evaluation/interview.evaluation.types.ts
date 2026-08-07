@@ -1,8 +1,8 @@
 import type {
     GeneratedInterviewQuestion,
-} from "./interview.question.types";
-import { CandidateSnapshot, InterviewState } from "./interview.types";
-import { TranscriptMessage } from "./interview.transcript.types";
+} from "../question/interview.question.types";
+import { CandidateSnapshot, InterviewState } from "../interview.types";
+import { TranscriptMessage } from "../transcript/interview.transcript.types";
 
 export interface RuntimeMistake {
     topic: string;

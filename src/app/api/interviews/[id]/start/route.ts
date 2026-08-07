@@ -14,12 +14,6 @@ import {
     startInterview,
 } from "@/server/modules/interview/interview.service";
 
-// interface RouteContext {
-//     params: Promise<{
-//         id: string;
-//     }>;
-// }
-
 export const POST = createRouteHandler(
     async (
         request: NextRequest,

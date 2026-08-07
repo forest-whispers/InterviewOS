@@ -95,13 +95,3 @@ export async function deleteCandidateSnapshot(
         snapshotKey(sessionId)
     );
 }
-
-function transcriptKey(
-    sessionId: string
-) {
-    return makeKey(
-        "interview",
-        sessionId,
-        "transcript"
-    );
-}

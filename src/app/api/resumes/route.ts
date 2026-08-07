@@ -50,28 +50,6 @@ export const POST = createRouteHandler(
                 size: file.size,
                 buffer,
             }
-
-            // file: {
-            //     fieldName: "resume",
-
-            //     originalName: file.name,
-
-            //     encoding: "",
-
-            //     mimeType: file.type,
-
-            //     size: file.size,
-
-            //     buffer,
-
-            //     stream: undefined as any,
-
-            //     destination: "",
-
-            //     filename: "",
-
-            //     path: "",
-            // },
         });
 
         return created({

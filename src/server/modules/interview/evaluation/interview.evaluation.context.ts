@@ -1,11 +1,11 @@
 import type {
     CandidateSnapshot,
     InterviewState,
-} from "./interview.types";
+} from "../interview.types";
 
 import type {
     TranscriptMessage
-} from "./interview.transcript.types";
+} from "../transcript/interview.transcript.types";
 
 import type {
     TurnEvaluation,

@@ -5,7 +5,7 @@ import type {
 import type {
     TurnEvaluation,
 } from "./interview.evaluation.types";
-import { GeneratedInterviewQuestion } from "./interview.question.types";
+import { GeneratedInterviewQuestion } from "./question/interview.question.types";
 
 export function updateRuntimeObservations(
     interviewState: InterviewState,

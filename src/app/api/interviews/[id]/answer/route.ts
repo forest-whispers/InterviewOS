@@ -26,12 +26,6 @@ import {
     UnauthorizedError,
 } from "@/server/shared/errors/errors";
 
-// interface RouteContext {
-//     params: Promise<{
-//         id: string;
-//     }>;
-// }
-
 export const POST = createRouteHandler(
     async (
         request: NextRequest,

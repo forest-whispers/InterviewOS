@@ -6,37 +6,32 @@ import {
 
 import { google } from "@ai-sdk/google";
 
-import { INTERVIEW_CONSTANTS } from "./interview.constants";
-
 import {
     InternalServerError,
 } from "@/server/shared/errors/errors";
 
 import {
-    buildInterviewQuestionPrompt,
-} from "./interview.question.prompts";
+    interviewTurnResultSchema,
+} from "./interview.evaluation.validation";
 
 import {
-    generatedInterviewQuestionSchema,
-} from "./interview.question.validation";
+    buildInterviewTurnPrompt,
+} from "./interview.evaluation.prompts";
 
 import type {
-    CandidateSnapshot,
-    InterviewPlan,
-} from "./interview.types";
-
-import type {
-    GeneratedInterviewQuestion
-} from "./interview.question.types";
+    EvaluateInterviewTurnInput,
+    InterviewTurnResult,
+} from "./interview.evaluation.types";
+import { INTERVIEW_CONSTANTS } from "../interview.constants";
 
 const MODEL = google(
     INTERVIEW_CONSTANTS.MODEL_NAME
 );
 
-export async function generateOpeningQuestion(
-    snapshot: CandidateSnapshot,
-    interviewPlan: InterviewPlan
-): Promise<GeneratedInterviewQuestion> {
+export async function evaluateInterviewTurn({
+    context,
+    currentAnswer
+}: EvaluateInterviewTurnInput): Promise<InterviewTurnResult> {
     try {
         const { output } =
             await generateText({
@@ -44,16 +39,16 @@ export async function generateOpeningQuestion(
 
                 output: Output.object({
                     schema:
-                        generatedInterviewQuestionSchema,
+                        interviewTurnResultSchema,
                 }),
 
                 prompt:
-                    buildInterviewQuestionPrompt(
-                        snapshot,
-                        interviewPlan
-                    ),
+                    buildInterviewTurnPrompt({
+                        context,
+                        currentAnswer,
+                    }),
 
-                temperature: 0.3,
+                temperature: 0.2,
 
                 maxRetries: 2,
             });
@@ -70,7 +65,7 @@ export async function generateOpeningQuestion(
         }
 
         throw new InternalServerError(
-            "Failed to generate interview question."
+            "Failed to evaluate interview turn."
         );
     }
 }

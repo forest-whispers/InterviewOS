@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-import {
-    generatedInterviewQuestionSchema,
-} from "./interview.question.validation";
+import { generatedInterviewQuestionSchema } from "../question/interview.question.validation";
 
 export const runtimeMistakeSchema =
     z.object({

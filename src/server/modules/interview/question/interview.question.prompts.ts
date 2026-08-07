@@ -1,7 +1,7 @@
 import type {
     CandidateSnapshot,
     InterviewPlan,
-} from "./interview.types";
+} from "../interview.types";
 
 export function buildInterviewQuestionPrompt(
     snapshot: CandidateSnapshot,

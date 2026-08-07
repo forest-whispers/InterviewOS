@@ -7,7 +7,7 @@ import {
 
 import { buildCandidateSnapshot } from "./interview.snapshot";
 import { buildInterviewPlan } from "./interview.plan";
-import { generateOpeningQuestion } from "./interview.question.ai";
+import { generateOpeningQuestion } from "./question/interview.question.ai";
 
 import {
     createInterviewState,
@@ -25,10 +25,10 @@ import {
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 import { Prisma } from "@prisma/client";
-import { appendTranscriptMessage, getTranscript } from "./interview.transcript";
-import { buildInterviewContext } from "./interview.evaluation.context";
-import { evaluateInterviewTurn } from "./interview.evaluation.ai";
-import { appendTurnEvaluation, getTurnEvaluations } from "./interview.evaluation.redis";
+import { appendTranscriptMessage, getTranscript } from "./transcript/interview.transcript";
+import { buildInterviewContext } from "./evaluation/interview.evaluation.context";
+import { evaluateInterviewTurn } from "./evaluation/interview.evaluation.ai";
+import { appendTurnEvaluation, getTurnEvaluations } from "./evaluation/interview.evaluation.redis";
 import { advanceInterviewState, updateRuntimeObservations } from "./interview.runtime";
 
 interface CreateInterviewInput {

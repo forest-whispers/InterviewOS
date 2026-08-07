@@ -2,7 +2,7 @@ import {
     ExperienceLevel,
     Prisma,
 } from "@prisma/client";
-import { GeneratedInterviewQuestion } from "./interview.question.types";
+import { GeneratedInterviewQuestion } from "./question/interview.question.types";
 
 export interface WeaknessSummary {
     topic: string;
@@ -57,16 +57,6 @@ export interface CandidateSnapshot {
 
     interviewObjective: string;
 }
-
-// export interface InterviewPlan {
-//     role: string;
-
-//     difficulty: "easy" | "medium" | "hard";
-
-//     estimatedQuestions: number;
-
-//     topics: string[];
-// }
 
 export type InterviewPlan = Prisma.JsonObject & {
     role: string;
