@@ -27,7 +27,7 @@ export interface UploadedFile {
 }
 
 interface UploadResumeInput {
-    candidateId: string;
+    userId: string;
 
     file: UploadedFile;
 }
@@ -71,16 +71,20 @@ function buildResumeEducationCreates(
 }
 
 export async function uploadResume({
-    candidateId,
+    userId,
     file,
 }: UploadResumeInput) {
     if (!file) {
         throw new BadRequestError("Resume file is required.");
     }
 
-    const candidate = await prisma.candidateProfile.findUnique({
+    const candidate = await prisma.candidateProfile.upsert({
         where: {
-            id: candidateId,
+            userId,
+        },
+        update: {},
+        create: {
+            userId,
         },
     });
 
@@ -126,7 +130,7 @@ export async function uploadResume({
     const result = await prisma.$transaction(async (tx) => {
         const resume = await tx.resume.create({
             data: {
-                candidateId,
+                candidateId: candidate.id,
 
                 fileUrl: uploadedFile.secure_url,
 
@@ -162,7 +166,7 @@ export async function uploadResume({
 
         await tx.candidateProfile.update({
             where: {
-                id: candidateId,
+                id: candidate.id,
             },
 
             data: {
@@ -201,5 +205,9 @@ export async function uploadResume({
 
         topSkills:
             result.parsedResume.topSkills,
+
+        projects: result.parsedResume.projects,
+
+        educations: result.parsedResume.education
     };
 }

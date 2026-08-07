@@ -1,4 +1,4 @@
-import cloudinary from "../../config/cloudinary.js";
+import cloudinary from "@/server/config/cloudinary";
 import { UploadedFile } from "@/server/modules/resume/resume.service.js";
 
 export async function uploadFileToCloudinary(

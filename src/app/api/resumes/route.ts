@@ -41,7 +41,7 @@ export const POST = createRouteHandler(
         );
 
         const result = await uploadResume({
-            candidateId: session.user._id,
+            userId: session.user.id,
 
             file: {
                 fieldName: "resume",
