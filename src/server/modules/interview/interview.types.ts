@@ -110,3 +110,9 @@ export interface InterviewState {
 
     expiresAt: string;
 }
+
+export interface SubmitAnswerDto {
+    sessionId: string;
+
+    answer: string;
+}

@@ -7,3 +7,11 @@ export const createInterviewSchema = z.object({
         .min(5)
         .max(500),
 });
+
+export const submitAnswerSchema = z.object({
+    answer: z
+        .string()
+        .trim()
+        .min(1, "Answer is required.")
+        .max(10000),
+});

@@ -20,10 +20,16 @@ import {
 import {
     CandidateSnapshot,
     InterviewState,
+    SubmitAnswerDto,
 } from "./interview.types";
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 import { Prisma } from "@prisma/client";
+import { appendTranscriptMessage, getTranscript } from "./interview.transcript";
+import { buildInterviewContext } from "./interview.evaluation.context";
+import { evaluateInterviewTurn } from "./interview.evaluation.ai";
+import { appendTurnEvaluation, getTurnEvaluations } from "./interview.evaluation.redis";
+import { advanceInterviewState, updateRuntimeObservations } from "./interview.runtime";
 
 interface CreateInterviewInput {
     userId: string;
@@ -209,30 +215,32 @@ export async function startInterview({
             state.interviewPlan
         );
 
-    await prisma.$transaction([
-        prisma.interviewSession.update({
-            where: {
-                id: sessionId,
-            },
+    await prisma.interviewSession.update({
+        where: {
+            id: sessionId,
+        },
+        data: {
+            status: "IN_PROGRESS",
+            startedAt: new Date(),
+        },
+    });
 
-            data: {
-                status: "IN_PROGRESS",
+    await appendTranscriptMessage({
+        sessionId,
 
-                startedAt: new Date(),
-            },
-        }),
+        role: "assistant",
 
-        prisma.interviewMessage.create({
-            data: {
-                interviewSessionId: sessionId,
+        content: generatedQuestion.question,
 
-                role: "ASSISTANT",
+        metadata: {
+            topic: generatedQuestion.topic,
 
-                content:
-                    generatedQuestion.question,
-            },
-        }),
-    ]);
+            difficulty: generatedQuestion.difficulty,
+
+            expectedCompetencies:
+                generatedQuestion.expectedCompetencies,
+        },
+    });
 
     state.currentQuestion =
         generatedQuestion;
@@ -258,5 +266,147 @@ export async function startInterview({
 
         difficulty:
             generatedQuestion.difficulty,
+    };
+}
+
+export async function submitAnswer({
+    sessionId,
+    answer,
+}: SubmitAnswerDto) {
+
+    const [
+        snapshot,
+        interviewState,
+        transcript,
+        evaluations,
+        session,
+    ] = await Promise.all([
+        getCandidateSnapshot(sessionId),
+
+        getInterviewState(sessionId),
+
+        getTranscript(sessionId),
+
+        getTurnEvaluations(sessionId),
+
+        prisma.interviewSession.findUnique({
+            where: {
+                id: sessionId,
+            },
+        }),
+    ]);
+
+    if (!session) {
+        throw new NotFoundError(
+            "Interview session not found."
+        );
+    }
+
+    if (session.status !== "IN_PROGRESS") {
+        throw new BadRequestError(
+            "Interview is not active."
+        );
+    }
+
+    if (!snapshot) {
+        throw new BadRequestError(
+            "Candidate snapshot missing."
+        );
+    }
+
+    if (!interviewState) {
+        throw new BadRequestError(
+            "Interview state missing."
+        );
+    }
+
+    const userMessage = await appendTranscriptMessage({
+        sessionId,
+
+        role: "user",
+
+        content: answer,
+    });
+
+    const latestTranscript = [
+        ...transcript,
+        userMessage,
+    ];
+    
+    const context =
+        buildInterviewContext({
+            snapshot,
+
+            interviewState,
+
+            transcript:
+                latestTranscript,
+
+            evaluations,
+        });
+
+    const result =
+        await evaluateInterviewTurn({
+            context,
+
+            currentAnswer:
+                answer,
+        });
+
+    await appendTurnEvaluation(
+        sessionId,
+        result.evaluation
+    );
+
+    let nextState =
+        updateRuntimeObservations(
+            interviewState,
+            result.evaluation
+        );
+
+    nextState =
+        advanceInterviewState(
+            nextState,
+            result.nextQuestion
+        );
+
+    await updateInterviewState(
+        nextState
+    );
+
+    await appendTranscriptMessage({
+        sessionId,
+
+        role: "assistant",
+
+        content:
+            result.nextQuestion.question,
+
+        metadata: {
+            topic:
+                result.nextQuestion.topic,
+
+            difficulty:
+                result.nextQuestion.difficulty,
+
+            expectedCompetencies:
+                result.nextQuestion
+                    .expectedCompetencies,
+        },
+    });
+
+    return {
+        evaluation:
+            result.evaluation,
+
+        nextQuestion:
+            result.nextQuestion.question,
+
+        topic:
+            result.nextQuestion.topic,
+
+        difficulty:
+            result.nextQuestion
+                .difficulty,
     };
 }

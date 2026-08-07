@@ -231,6 +231,8 @@ model InterviewMessage {
 
   content String
 
+  metadata Json?
+
   createdAt DateTime @default(now())
 
   @@index([interviewSessionId])

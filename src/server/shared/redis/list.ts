@@ -6,10 +6,11 @@ export async function appendToList<T>(
     ttlSeconds?: number
 ): Promise<boolean> {
     try {
-        await redis.rpush(
-            key,
-            JSON.stringify(value)
-        );
+        await redis.rpush(key, value);
+        // await redis.rpush(
+        //     key,
+        //     JSON.stringify(value)
+        // );
 
         if (ttlSeconds) {
             await redis.expire(
@@ -40,9 +41,11 @@ export async function getList<T>(
                 -1
             );
 
-        return values.map((value) =>
-            JSON.parse(value)
-        ) as T[];
+        return values as T[];
+
+        // return values.map((value) =>
+        //     JSON.parse(value)
+        // ) as T[];
     } catch (error) {
         console.error(
             `Redis LRANGE failed for key "${key}"`,
