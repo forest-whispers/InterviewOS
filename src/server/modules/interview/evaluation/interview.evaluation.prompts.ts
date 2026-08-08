@@ -28,11 +28,10 @@ Instructions:
 3. Extract strengths.
 
 4. Extract mistakes and include corrected: true if a previously identified
-mistake has been clearly corrected in the latest answer.
-
+mistake (either from this session or from a previous interview) has been clearly corrected in the latest answer.
 - corrected: true only when the candidate demonstrates the correct concept.
 - corrected: false for new or repeated mistakes.
-- Match against runtimeObservations.repeatedMistakes.
+- Match against both runtimeObservations.repeatedMistakes AND candidate.previousMistakes.
 
 5. Decide whether the interview difficulty should change.
 
