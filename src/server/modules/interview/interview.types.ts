@@ -4,6 +4,7 @@ import {
 } from "@prisma/client";
 import { GeneratedInterviewQuestion } from "./question/interview.question.types";
 import { CommunicationProfile } from "../candidate/candidate.types";
+import { RuntimeMistake } from "./evaluation/interview.evaluation.types";
 
 export interface WeaknessSummary {
     topic: string;
@@ -57,12 +58,6 @@ export type InterviewPlan = Prisma.JsonObject & {
     estimatedQuestions: number;
     topics: string[];
 };
-
-export interface RuntimeMistake {
-    topic: string;
-
-    description: string;
-}
 
 export interface InterviewState {
     sessionId: string;

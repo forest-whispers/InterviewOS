@@ -20,12 +20,11 @@ import {
 import {
     CandidateSnapshot,
     InterviewState,
-    SubmitAnswerDto,
 } from "./interview.types";
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 import { Prisma } from "@prisma/client";
-import { appendTranscriptMessage, getTranscript } from "./transcript/interview.transcript";
+import { appendTranscriptMessage, } from "./transcript/interview.transcript";
 
 interface CreateInterviewInput {
     userId: string;

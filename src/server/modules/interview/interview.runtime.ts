@@ -3,9 +3,33 @@ import type {
 } from "./interview.types";
 
 import type {
+    RuntimeMistake,
     TurnEvaluation
 } from "./evaluation/interview.evaluation.types";
 import { GeneratedInterviewQuestion } from "./question/interview.question.types";
+
+function normalizeMistakeText(
+    value: string
+): string {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+}
+
+function getMistakeKey(
+    mistake: RuntimeMistake
+): string {
+    return [
+        normalizeMistakeText(
+            mistake.topic
+        ),
+
+        normalizeMistakeText(
+            mistake.description
+        ),
+    ].join(":");
+}
 
 export function updateRuntimeObservations(
     interviewState: InterviewState,
@@ -21,22 +45,61 @@ export function updateRuntimeObservations(
     ];
 
     for (const mistake of evaluation.mistakes) {
-        if (mistake.corrected === true) {
-            if (
-                !correctedMistakes.some(
-                    (m) => m.topic === mistake.topic
-                )
-            ) {
-                correctedMistakes.push(mistake);
+
+        const mistakeKey =
+            getMistakeKey(mistake);
+
+        const repeatedIndex =
+            repeatedMistakes.findIndex(
+                (existing) =>
+                    getMistakeKey(existing) ===
+                    mistakeKey
+            );
+
+        const correctedIndex =
+            correctedMistakes.findIndex(
+                (existing) =>
+                    getMistakeKey(existing) ===
+                    mistakeKey
+            );
+
+        if (mistake.corrected) {
+
+            if (repeatedIndex !== -1) {
+                repeatedMistakes.splice(
+                    repeatedIndex,
+                    1
+                );
             }
+
+            if (correctedIndex === -1) {
+                correctedMistakes.push(
+                    mistake
+                );
+            } else {
+                correctedMistakes[
+                    correctedIndex
+                ] = mistake;
+            }
+
+            continue;
+        }
+
+        if (correctedIndex !== -1) {
+            correctedMistakes.splice(
+                correctedIndex,
+                1
+            );
+        }
+
+        if (repeatedIndex === -1) {
+            repeatedMistakes.push(
+                mistake
+            );
         } else {
-            if (
-                !repeatedMistakes.some(
-                    (m) => m.topic === mistake.topic
-                )
-            ) {
-                repeatedMistakes.push(mistake);
-            }
+            repeatedMistakes[
+                repeatedIndex
+            ] = mistake;
         }
     }
 
