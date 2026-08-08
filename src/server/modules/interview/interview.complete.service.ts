@@ -117,80 +117,89 @@ export async function completeInterview({
 
     console.log("interview:complete, interview final evaluation artifact: ", artifact);
 
-    const [
-        _transcriptResult,
-        persistedEvaluation,
-        sessionResult,
-    ] = await prisma.$transaction([
-        prisma.interviewMessage.createMany({
-            data: transcriptData,
-        }),
+    const { sessionResult } =
+        await prisma.$transaction(
+            async (tx) => {
 
-        prisma.interviewEvaluation.create({
-            data: {
-                interviewSessionId:
-                    sessionId,
+                await tx.interviewMessage.createMany({
+                    data: transcriptData,
+                });
 
-                overallScore:
-                    artifact.overallScore,
+                const evaluation =
+                    await tx.interviewEvaluation.create({
+                        data: {
+                            interviewSessionId:
+                                sessionId,
 
-                technicalScore:
-                    artifact.technicalScore,
+                            overallScore:
+                                artifact.overallScore,
 
-                communicationScore:
-                    artifact.communicationScore,
+                            technicalScore:
+                                artifact.technicalScore,
 
-                artifact:
-                    artifact as unknown as Prisma.InputJsonValue,
-            },
-        }),
+                            communicationScore:
+                                artifact.communicationScore,
 
-        prisma.interviewSession.update({
-            where: {
-                id: sessionId,
-            },
+                            artifact:
+                                artifact as unknown as Prisma.InputJsonValue,
+                        },
+                    });
 
-            data: {
-                status: "COMPLETED",
+                const sessionResult =
+                    await tx.interviewSession.update({
+                        where: {
+                            id: sessionId,
+                        },
 
-                completedAt:
-                    new Date(),
+                        data: {
+                            status: "COMPLETED",
 
-                metadata:
-                    interviewMetadata as unknown as Prisma.InputJsonValue,
-            },
-        }),
-    ]);
+                            completedAt:
+                                new Date(),
+
+                            metadata:
+                                interviewMetadata as unknown as Prisma.InputJsonValue,
+                        },
+                    });
+
+                await updateCandidateState({
+                    tx,
+                    candidateProfileId:
+                        session.candidateId,
+
+                    evaluationId:
+                        evaluation.id,
+
+                    interviewId:
+                        sessionId,
+
+                    evaluation:
+                        artifact,
+                }
+                );
+
+                await tx.candidateProfile.update({
+                    where: {
+                        id: session.candidateId,
+                    },
+
+                    data: {
+                        readinessScore:
+                            artifact.overallScore,
+
+                        interviewsTaken: {
+                            increment: 1,
+                        },
+                    },
+                });
+
+                return {
+                    sessionResult
+                };
+            }
+        );
 
     console.log("interview:complete, sessionResults with interview metadata ", sessionResult);
-
-    await updateCandidateState({
-        candidateProfileId:
-            session.candidateId,
-
-        evaluationId:
-            persistedEvaluation.id,
-
-        interviewId:
-            sessionId,
-
-        evaluation: artifact,
-    });
-
-    await prisma.candidateProfile.update({
-        where: {
-            id: session.candidateId,
-        },
-
-        data: {
-            readinessScore:
-                artifact.overallScore,
-
-            interviewsTaken: {
-                increment: 1,
-            },
-        },
-    });
 
     await Promise.all([
         clearTranscript(sessionId),

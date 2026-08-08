@@ -101,6 +101,8 @@ const communicationProfileSchema =
             .max(10),
 
         trend: trendSchema,
+
+        observationCount: z.number(),
 });
 
 export const candidateStateSchema =

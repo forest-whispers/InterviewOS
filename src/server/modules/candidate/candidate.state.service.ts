@@ -19,6 +19,10 @@ import type {
 import type {
     EvaluationArtifact
 } from "../interview/finalArtifact/interview.final.types";
+import { Prisma } from "@prisma/client";
+
+type CandidateStateTransaction =
+    Prisma.TransactionClient;
 
 export async function getCandidateState(
     candidateProfileId: string
@@ -40,11 +44,14 @@ export async function getCandidateState(
 }
 
 export async function updateCandidateState({
+    tx,
     candidateProfileId,
     evaluationId,
     interviewId,
     evaluation,
 }: {
+    tx: CandidateStateTransaction,
+
     candidateProfileId: string;
 
     evaluationId: string;
@@ -84,7 +91,7 @@ export async function updateCandidateState({
             nextState
         );
 
-    await prisma.candidateState.upsert({
+    await tx.candidateState.upsert({
         where: {
             candidateProfileId,
         },

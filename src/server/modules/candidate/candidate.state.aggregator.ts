@@ -179,7 +179,7 @@ function aggregateCommunication(
         ) / 3;
 
     const previousCount =
-        previous.observationCount;
+        previous.observationCount ?? 1;
 
     const nextCount =
         previousCount + 1;
