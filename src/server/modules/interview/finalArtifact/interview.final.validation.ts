@@ -16,19 +16,10 @@ const strengthSchema = z.object({
 
     description: z.string(),
 
-    frequency: z
-        .number()
-        .int()
-        .min(1),
-
     confidence: z
         .number()
         .min(0)
         .max(10),
-
-    trend: trendSchema,
-
-    lastSeenAt: z.string().datetime(),
 });
 
 const weaknessSchema = z.object({

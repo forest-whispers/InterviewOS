@@ -1,5 +1,3 @@
-import { Trend } from "../../candidate/candidate.types";
-
 export interface TechnicalScores {
     dataStructures: number;
 
@@ -24,16 +22,8 @@ export interface CommunicationScores {
 
 export interface Strength {
     topic: string;
-
     description: string;
-
     confidence: number;
-
-    trend: Trend;
-
-    frequency: number;
-
-    lastSeenAt: string;
 }
 
 export interface Weakness {

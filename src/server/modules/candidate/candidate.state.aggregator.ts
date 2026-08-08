@@ -335,10 +335,14 @@ function aggregateStrengths(
             );
 
         if (existingIndex === -1) {
-            strengths.push(
-                incomingStrength
-            );
-
+            strengths.push({
+                topic: incomingStrength.topic,
+                description: incomingStrength.description,
+                frequency: 1,
+                confidence: incomingStrength.confidence,
+                trend: "STABLE",
+                lastSeenAt: occurredAt
+            });
             continue;
         }
 
@@ -348,18 +352,16 @@ function aggregateStrengths(
         strengths[existingIndex] = {
             ...existingStrength,
 
-            frequency:
-                existingStrength.frequency + 1,
+            frequency: existingStrength.frequency + 1,
 
-            description:
-                incomingStrength.description,
+            confidence: incomingStrength.confidence,
 
-            trend:
-                existingStrength.frequency <
-                    incomingStrength.frequency
-                    ? "IMPROVING"
-                    : existingStrength.trend,
-        };
+            description: incomingStrength.description,
+
+            trend: calculateTrend(existingStrength.confidence, incomingStrength.confidence),
+            
+            lastSeenAt: occurredAt,
+            };
     }
 
     return strengths;
