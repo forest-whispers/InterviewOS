@@ -25,9 +25,9 @@ interface BuildInterviewContextInput {
     evaluations: TurnEvaluation[];
 }
 
-const RECENT_MESSAGE_LIMIT = 6;
+const RECENT_MESSAGE_LIMIT = 4;
 
-const RECENT_EVALUATION_LIMIT = 2;
+const RECENT_EVALUATION_LIMIT = 4;
 
 export function buildInterviewContext({
     snapshot,

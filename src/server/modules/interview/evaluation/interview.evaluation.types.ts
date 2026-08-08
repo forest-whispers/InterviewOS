@@ -10,6 +10,8 @@ export interface RuntimeMistake {
     description: string;
 
     severity: "LOW" | "MEDIUM" | "HIGH";
+
+    corrected: boolean;
 }
 
 export interface TurnEvaluation {

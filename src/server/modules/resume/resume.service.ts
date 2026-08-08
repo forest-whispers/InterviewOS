@@ -106,6 +106,8 @@ export async function uploadResume({
 
     const parsedResume = await parseResume(normalizedText);
 
+    console.log("Resume Parsed, summary: ", parsedResume.summary);
+
     /*
      * Upload to Cloudinary.
      * We upload only after successfully parsing

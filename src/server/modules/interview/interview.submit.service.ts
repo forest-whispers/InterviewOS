@@ -93,6 +93,8 @@ export async function submitAnswer({
                 answer,
         });
 
+    console.log("interview:submit, interview turn evaluation: ", result);
+
     await appendTurnEvaluation(
         sessionId,
         result.evaluation
@@ -109,6 +111,8 @@ export async function submitAnswer({
             nextState,
             result.nextQuestion
         );
+
+    console.log("interview:submit, advanced interview state: ", nextState);
 
     await updateInterviewState(
         nextState

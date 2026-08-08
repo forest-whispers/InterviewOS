@@ -43,12 +43,16 @@ export async function parseResume(
 
         return output;
     } catch (error) {
+        let actualError = error;
+        if (error && typeof error === "object" && "lastError" in error) {
+            actualError = (error as any).lastError;
+        }
         if (
-            APICallError.isInstance(error) &&
-            error.statusCode === 429
+            APICallError.isInstance(actualError) &&
+            actualError.statusCode === 429
         ) {
             throw new InternalServerError(
-                "Resume parser is temporarily unavailable."
+                "Interview service is temporarily unavailable."
             );
         }
 

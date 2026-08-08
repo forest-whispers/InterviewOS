@@ -21,12 +21,22 @@ export function updateRuntimeObservations(
     ];
 
     for (const mistake of evaluation.mistakes) {
-        if (
-            !repeatedMistakes.some(
-                (m) => m.topic === mistake.topic
-            )
-        ) {
-            repeatedMistakes.push(mistake);
+        if (mistake.corrected === true) {
+            if (
+                !correctedMistakes.some(
+                    (m) => m.topic === mistake.topic
+                )
+            ) {
+                correctedMistakes.push(mistake);
+            }
+        } else {
+            if (
+                !repeatedMistakes.some(
+                    (m) => m.topic === mistake.topic
+                )
+            ) {
+                repeatedMistakes.push(mistake);
+            }
         }
     }
 

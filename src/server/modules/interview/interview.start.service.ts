@@ -113,6 +113,8 @@ export async function createInterview({
             interviewObjective
         );
 
+    console.log("interview:create, candidate snapshot: ", snapshot);
+
     const interviewPlan =
         buildInterviewPlan(snapshot);
 
@@ -138,6 +140,8 @@ export async function createInterview({
             session.id,
             snapshot
         );
+
+    console.log("interview:create, interview state: ", state);
 
     await Promise.all([
         storeCandidateSnapshot(

@@ -13,6 +13,8 @@ export const runtimeMistakeSchema =
             "MEDIUM",
             "HIGH",
         ]),
+
+        corrected: z.boolean(),
 });
 
 export const turnEvaluationSchema =

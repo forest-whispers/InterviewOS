@@ -86,6 +86,8 @@ export async function completeInterview({
             interviewMetadata
         });
 
+    console.log("interview:complete, interview final evaluation artifact: ", artifact);
+
     const persistedEvaluation =
         await prisma.$transaction(
             async (tx) => {
