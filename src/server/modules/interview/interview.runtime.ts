@@ -1,4 +1,5 @@
 import type {
+    InterviewRuntimeSummary,
     InterviewState,
 } from "./interview.types";
 
@@ -29,6 +30,35 @@ function getMistakeKey(
             mistake.description
         ),
     ].join(":");
+}
+
+export function buildRuntimeSummary(
+    state: InterviewState
+): InterviewRuntimeSummary {
+    return {
+        hintsGiven:
+            state.runtimeObservations.hintsGiven,
+
+        skippedQuestions:
+            state.runtimeObservations.skippedQuestions,
+
+        topicsCovered:
+            [
+                ...state.runtimeObservations.topicsCovered,
+            ],
+
+        repeatedMistakes:
+            [
+                ...state.runtimeObservations
+                    .repeatedMistakes,
+            ],
+
+        correctedMistakes:
+            [
+                ...state.runtimeObservations
+                    .correctedMistakes,
+            ],
+    };
 }
 
 export function updateRuntimeObservations(

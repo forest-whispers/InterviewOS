@@ -59,6 +59,18 @@ export type InterviewPlan = Prisma.JsonObject & {
     topics: string[];
 };
 
+export interface InterviewRuntimeSummary {
+    hintsGiven: number;
+
+    skippedQuestions: number;
+
+    topicsCovered: string[];
+
+    repeatedMistakes: RuntimeMistake[];
+
+    correctedMistakes: RuntimeMistake[];
+}
+
 export interface InterviewState {
     sessionId: string;
 
@@ -72,17 +84,7 @@ export interface InterviewState {
 
     difficulty: "easy" | "medium" | "hard";
 
-    runtimeObservations: {
-        repeatedMistakes: RuntimeMistake[];
-
-        correctedMistakes: RuntimeMistake[];
-
-        hintsGiven: number;
-
-        topicsCovered: string[];
-
-        skippedQuestions: number;
-    };
+    runtimeObservations: InterviewRuntimeSummary;
 
     startedAt: string;
 
