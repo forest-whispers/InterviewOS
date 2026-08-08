@@ -8,6 +8,7 @@ import type {
 
 import type {
     CandidateMistakeSummary,
+    CommunicationProfile,
     SkillState,
     StrengthSummary,
     WeaknessSummary,
@@ -140,7 +141,8 @@ function aggregateTechnicalScores(
 function aggregateCommunication(
     previousState: CandidateState | null,
     evaluation: EvaluationArtifact
-) {
+): CommunicationProfile {
+
     const previous =
         previousState?.communication;
 
@@ -156,7 +158,9 @@ function aggregateCommunication(
             conciseness:
                 current.conciseness,
 
-            trend: "STABLE" as const,
+            observationCount: 1,
+
+            trend: "STABLE",
         };
     }
 
@@ -174,29 +178,48 @@ function aggregateCommunication(
             current.conciseness
         ) / 3;
 
+    const previousCount =
+        previous.observationCount;
+
+    const nextCount =
+        previousCount + 1;
+
     return {
         clarity: Number(
             (
-                (previous.clarity + current.clarity) /
-                2
+                (
+                    previous.clarity *
+                    previousCount +
+                    current.clarity
+                ) /
+                nextCount
             ).toFixed(2)
         ),
 
         structure: Number(
             (
-                (previous.structure + current.structure) /
-                2
+                (
+                    previous.structure *
+                    previousCount +
+                    current.structure
+                ) /
+                nextCount
             ).toFixed(2)
         ),
 
         conciseness: Number(
             (
                 (
-                    previous.conciseness +
+                    previous.conciseness *
+                    previousCount +
                     current.conciseness
-                ) / 2
+                ) /
+                nextCount
             ).toFixed(2)
         ),
+
+        observationCount:
+            nextCount,
 
         trend: calculateTrend(
             previousAverage,

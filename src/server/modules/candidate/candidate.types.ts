@@ -64,5 +64,7 @@ export type CommunicationProfile = {
 
     conciseness: number;
 
+    observationCount: number;
+
     trend: Trend;
 };
