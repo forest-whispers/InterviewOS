@@ -22,6 +22,8 @@ interface AppendTranscriptInput {
     content: string;
 
     metadata?: TranscriptMessage["metadata"];
+
+    id?: string;
 }
 
 export async function appendTranscriptMessage({
@@ -29,9 +31,10 @@ export async function appendTranscriptMessage({
     role,
     content,
     metadata,
+    id
 }: AppendTranscriptInput) {
     const message: TranscriptMessage = {
-        id: createId(),
+        id: id ?? createId(),
 
         role,
 

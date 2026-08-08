@@ -63,6 +63,23 @@ export interface InterviewContext {
     };
 }
 
+export interface MessageEvaluationMetadata {
+    score: number;
+
+    correctness: number;
+
+    communication: {
+        clarity: number;
+        structure: number;
+    };
+
+    mistakes: RuntimeMistake[];
+
+    strengths: string[];
+
+    followUpRequired: boolean;
+}
+
 export interface EvaluateInterviewTurnInput {
     context: InterviewContext;
 

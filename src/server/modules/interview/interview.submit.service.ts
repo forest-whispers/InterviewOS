@@ -1,4 +1,5 @@
 import { prisma } from "@/server/config/db";
+import { createId } from "@paralleldrive/cuid2";
 
 import { appendTurnEvaluation, getTurnEvaluations } from "./evaluation/interview.evaluation.redis";
 import { getCandidateSnapshot, getInterviewState, updateInterviewState } from "./interview.redis";
@@ -60,18 +61,12 @@ export async function submitAnswer({
         );
     }
 
-    const userMessage = await appendTranscriptMessage({
-        sessionId,
+    // const latestTranscript = [
+    //     ...transcript,
+    //     userMessage,
+    // ];
 
-        role: "user",
-
-        content: answer,
-    });
-
-    const latestTranscript = [
-        ...transcript,
-        userMessage,
-    ];
+    const latestTranscript = transcript;
 
     const context =
         buildInterviewContext({
@@ -94,6 +89,43 @@ export async function submitAnswer({
         });
 
     console.log("interview:submit, interview turn evaluation: ", result);
+
+    const metadata = {
+
+        score: result.evaluation.score,
+
+        correctness:
+        result.evaluation.correctness,
+
+        communication: {
+            clarity:
+            result.evaluation.communication.clarity,
+
+            structure:
+            result.evaluation.communication.structure,
+        },
+
+        mistakes:
+        result.evaluation.mistakes,
+
+        strengths:
+        result.evaluation.strengths,
+
+        followUpRequired:
+        result.evaluation.followUpRequired,
+    }
+
+    const evaluatedAnswer = await appendTranscriptMessage({
+        sessionId,
+
+        role: "user",
+
+        content: answer,
+
+        metadata,
+
+        id: createId()
+    });
 
     await appendTurnEvaluation(
         sessionId,
@@ -140,17 +172,21 @@ export async function submitAnswer({
     });
 
     return {
-        evaluation:
-            result.evaluation,
+        interview: {
+            evaluation:
+                result.evaluation,
 
-        nextQuestion:
-            result.nextQuestion.question,
+            nextQuestion:
+                result.nextQuestion.question,
 
-        topic:
-            result.nextQuestion.topic,
+            topic:
+                result.nextQuestion.topic,
 
-        difficulty:
-            result.nextQuestion
-                .difficulty,
-    };
+            difficulty:
+                result.nextQuestion
+                    .difficulty,
+        },
+
+        evaluatedAnswer
+    }
 }
