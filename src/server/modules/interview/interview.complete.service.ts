@@ -68,6 +68,8 @@ export async function completeInterview({
         );
     }
 
+    console.dir(session.metadata, { depth: null, colors: true });
+
     if (session.status !== "IN_PROGRESS") {
         throw new BadRequestError(
             "Interview is not active."
@@ -115,53 +117,52 @@ export async function completeInterview({
 
     console.log("interview:complete, interview final evaluation artifact: ", artifact);
 
-    const persistedEvaluation =
-        await prisma.$transaction(
-            async (tx) => {
+    const [
+        _transcriptResult,
+        persistedEvaluation,
+        sessionResult,
+    ] = await prisma.$transaction([
+        prisma.interviewMessage.createMany({
+            data: transcriptData,
+        }),
 
-                await tx.interviewMessage.createMany({
-                    data: transcriptData,
-                });
+        prisma.interviewEvaluation.create({
+            data: {
+                interviewSessionId:
+                    sessionId,
 
-                const evaluation =
-                    await tx.interviewEvaluation.create({
-                        data: {
-                            interviewSessionId:
-                                sessionId,
+                overallScore:
+                    artifact.overallScore,
 
-                            overallScore:
-                                artifact.overallScore,
+                technicalScore:
+                    artifact.technicalScore,
 
-                            technicalScore:
-                                artifact.technicalScore,
+                communicationScore:
+                    artifact.communicationScore,
 
-                            communicationScore:
-                                artifact.communicationScore,
+                artifact:
+                    artifact as unknown as Prisma.InputJsonValue,
+            },
+        }),
 
-                            artifact:
-                                artifact as unknown as Prisma.InputJsonValue,
-                        },
-                    });
+        prisma.interviewSession.update({
+            where: {
+                id: sessionId,
+            },
 
-                await tx.interviewSession.update({
-                    where: {
-                        id: sessionId,
-                    },
+            data: {
+                status: "COMPLETED",
 
-                    data: {
-                        status: "COMPLETED",
+                completedAt:
+                    new Date(),
 
-                        completedAt:
-                            new Date(),
+                metadata:
+                    interviewMetadata as unknown as Prisma.InputJsonValue,
+            },
+        }),
+    ]);
 
-                        metadata:
-                            interviewMetadata as unknown as Prisma.InputJsonValue,
-                    },
-                });
-
-                return evaluation;
-            }
-    );
+    console.log("interview:complete, sessionResults with interview metadata ", sessionResult);
 
     await updateCandidateState({
         candidateProfileId:

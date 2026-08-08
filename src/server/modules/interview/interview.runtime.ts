@@ -9,7 +9,7 @@ import type {
 } from "./evaluation/interview.evaluation.types";
 import { GeneratedInterviewQuestion } from "./question/interview.question.types";
 
-function normalizeMistakeText(
+function normalizeText(
     value: string
 ): string {
     return value
@@ -22,11 +22,11 @@ function getMistakeKey(
     mistake: RuntimeMistake
 ): string {
     return [
-        normalizeMistakeText(
+        normalizeText(
             mistake.topic
         ),
 
-        normalizeMistakeText(
+        normalizeText(
             mistake.description
         ),
     ].join(":");
@@ -72,6 +72,10 @@ export function updateRuntimeObservations(
 
     const correctedMistakes = [
         ...interviewState.runtimeObservations.correctedMistakes,
+    ];
+
+    const topicsCovered = [
+        ...interviewState.runtimeObservations.topicsCovered,
     ];
 
     for (const mistake of evaluation.mistakes) {
@@ -133,6 +137,16 @@ export function updateRuntimeObservations(
         }
     }
 
+    const alreadyCovered = topicsCovered.some(
+        (topic) =>
+            normalizeText(topic) ===
+            normalizeText(evaluation.topic)
+    );
+
+    if (!alreadyCovered) {
+        topicsCovered.push(evaluation.topic);
+    }
+
     return {
         ...interviewState,
 
@@ -148,9 +162,17 @@ export function updateRuntimeObservations(
         runtimeObservations: {
             ...interviewState.runtimeObservations,
 
+            topicsCovered,
+
             repeatedMistakes,
 
             correctedMistakes,
+
+            hintsGiven:
+                interviewState.runtimeObservations.hintsGiven,
+
+            skippedQuestions:
+                interviewState.runtimeObservations.skippedQuestions,
         },
     };
 }

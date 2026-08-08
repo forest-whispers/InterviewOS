@@ -48,13 +48,16 @@ export const POST = createRouteHandler(
                 submitAnswerSchema
             );
 
-        const interview =
+        const { interview, evaluatedAnswer } =
             await submitAnswer({
                 sessionId: id,
 
                 answer: dto.answer,
             });
 
-        return ok(interview);
+        return ok({
+            interview,
+            evaluatedAnswer
+        });
     }
 );
