@@ -28,6 +28,8 @@ export interface CandidateMistakeSummary {
     description: string;
 
     severity: "LOW" | "MEDIUM" | "HIGH";
+
+    corrected: boolean;
 }
 
 export interface CandidateSnapshot {

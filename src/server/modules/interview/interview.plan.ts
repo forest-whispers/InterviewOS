@@ -5,11 +5,86 @@ import type {
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 
+function normalizeTopic(
+    topic: string
+): string {
+    return topic
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+}
+
+function addTopic(
+    topics: string[],
+    topic: string
+): void {
+
+    const normalized =
+        normalizeTopic(topic);
+
+    const exists =
+        topics.some(
+            (existing) =>
+                normalizeTopic(existing) ===
+                normalized
+        );
+
+    if (!exists) {
+        topics.push(topic);
+    }
+}
+
 export function buildInterviewPlan(
     snapshot: CandidateSnapshot
 ): InterviewPlan {
+    const topics: string[] = [];
+
+    /*
+     * Prioritize current weaknesses.
+     */
+    for (
+        const weakness
+        of snapshot.currentWeaknesses
+    ) {
+        addTopic(
+            topics,
+            weakness.topic
+        );
+    }
+
+    /*
+     * Then include unresolved
+     * previous mistakes.
+     */
+    for (
+        const mistake
+        of snapshot.previousMistakes
+    ) {
+        if (!mistake.corrected) {
+            addTopic(
+                topics,
+                mistake.topic
+            );
+        }
+    }
+
+    /*
+     * Finally fill remaining slots
+     * with the candidate's top skills.
+     */
+    for (
+        const skill
+        of snapshot.topSkills
+    ) {
+        addTopic(
+            topics,
+            skill
+        );
+    }
+
     return {
-        role: snapshot.targetRole,
+        role:
+            snapshot.targetRole,
 
         difficulty:
             INTERVIEW_CONSTANTS.DEFAULT_DIFFICULTY,
@@ -17,6 +92,7 @@ export function buildInterviewPlan(
         estimatedQuestions:
             INTERVIEW_CONSTANTS.DEFAULT_QUESTION_COUNT,
 
-        topics: snapshot.topSkills.slice(0, 5),
+        topics:
+            topics.slice(0, 5),
     };
 }
