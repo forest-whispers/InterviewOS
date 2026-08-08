@@ -1,3 +1,5 @@
+import { Strength } from "../interview/finalArtifact/interview.final.types";
+
 export type Trend =
     | "IMPROVING"
     | "STABLE"
@@ -29,17 +31,7 @@ export type WeaknessSummary = {
     lastSeenAt: string;
 };
 
-export type StrengthSummary = {
-    topic: string;
-
-    frequency: number;
-
-    confidence: number;
-
-    trend: Trend;
-
-    lastSeenAt: string;
-};
+export type StrengthSummary = Strength;
 
 export type CandidateMistakeSummary = {
     topic: string;

@@ -5,15 +5,30 @@ const scoreSchema = z
     .min(0)
     .max(10);
 
+const trendSchema = z.enum([
+    "IMPROVING",
+    "STABLE",
+    "DECLINING",
+]);
+
 const strengthSchema = z.object({
     topic: z.string(),
 
     description: z.string(),
 
+    frequency: z
+        .number()
+        .int()
+        .min(1),
+
     confidence: z
         .number()
         .min(0)
-        .max(10)
+        .max(10),
+
+    trend: trendSchema,
+
+    lastSeenAt: z.string().datetime(),
 });
 
 const weaknessSchema = z.object({

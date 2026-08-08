@@ -47,6 +47,8 @@ const weaknessSummarySchema = z.object({
 const strengthSummarySchema = z.object({
     topic: z.string().min(1),
 
+    description: z.string(),
+
     frequency: z
         .number()
         .int()

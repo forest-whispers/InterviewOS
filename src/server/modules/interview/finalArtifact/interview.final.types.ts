@@ -1,3 +1,5 @@
+import { Trend } from "../../candidate/candidate.types";
+
 export interface TechnicalScores {
     dataStructures: number;
 
@@ -26,6 +28,12 @@ export interface Strength {
     description: string;
 
     confidence: number;
+
+    trend: Trend;
+
+    frequency: number;
+
+    lastSeenAt: string;
 }
 
 export interface Weakness {

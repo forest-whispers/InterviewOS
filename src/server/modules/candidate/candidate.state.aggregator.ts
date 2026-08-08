@@ -15,6 +15,22 @@ import type {
 
 const TREND_THRESHOLD = 0.5;
 
+function normalizeText(value: string): string {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+}
+
+function getMistakeKey(
+    mistake: CandidateMistakeSummary
+): string {
+    return [
+        normalizeText(mistake.topic),
+        normalizeText(mistake.description),
+    ].join(":");
+}
+
 function calculateTrend(
     previousScore: number,
     currentScore: number
@@ -198,11 +214,24 @@ function normalizeTopic(
         .replace(/\s+/g, " ");
 }
 
+function calculateWeaknessTrend(
+    previousFrequency: number,
+    nextFrequency: number
+): "IMPROVING" | "STABLE" | "DECLINING" {
+
+    if (nextFrequency > previousFrequency) {
+        return "DECLINING";
+    }
+
+    return "STABLE";
+}
+
 function aggregateWeaknesses(
     previousState: CandidateState | null,
     evaluation: EvaluationArtifact,
     occurredAt: string
 ): WeaknessSummary[] {
+
     const existing =
         previousState?.currentWeaknesses ?? [];
 
@@ -211,6 +240,7 @@ function aggregateWeaknesses(
     ];
 
     for (const weakness of evaluation.weaknesses) {
+
         const normalizedTopic =
             normalizeTopic(
                 weakness.topic
@@ -225,6 +255,7 @@ function aggregateWeaknesses(
             );
 
         if (existingIndex === -1) {
+
             weaknesses.push({
                 topic: weakness.topic,
 
@@ -251,18 +282,25 @@ function aggregateWeaknesses(
         const previousFrequency =
             existingWeakness.frequency;
 
+        const nextFrequency =
+            previousFrequency + 1;
+
         weaknesses[existingIndex] = {
             ...existingWeakness,
 
             frequency:
-                previousFrequency + 1,
+                nextFrequency,
 
             severity:
                 weakness.severity === "HIGH"
                     ? "HIGH"
                     : existingWeakness.severity,
 
-            trend: "STABLE",
+            trend:
+                calculateWeaknessTrend(
+                    previousFrequency,
+                    nextFrequency
+                ),
 
             lastSeenAt:
                 occurredAt,
@@ -284,33 +322,22 @@ function aggregateStrengths(
         ...existing,
     ];
 
-    for (const strength of evaluation.strengths) {
-        const normalizedTopic =
-            normalizeTopic(
-                strength.topic
-            );
-
+    for (const incomingStrength of evaluation.strengths) {
         const existingIndex =
             strengths.findIndex(
-                (item) =>
-                    normalizeTopic(
-                        item.topic
-                    ) === normalizedTopic
+                (strength) =>
+                    normalizeText(
+                        strength.topic
+                    ) ===
+                    normalizeText(
+                        incomingStrength.topic
+                    )
             );
 
         if (existingIndex === -1) {
-            strengths.push({
-                topic: strength.topic,
-
-                frequency: 1,
-
-                confidence: strength.confidence,
-
-                trend: "STABLE",
-
-                lastSeenAt:
-                    occurredAt,
-            });
+            strengths.push(
+                incomingStrength
+            );
 
             continue;
         }
@@ -324,10 +351,14 @@ function aggregateStrengths(
             frequency:
                 existingStrength.frequency + 1,
 
-            trend: "STABLE",
+            description:
+                incomingStrength.description,
 
-            lastSeenAt:
-                occurredAt,
+            trend:
+                existingStrength.frequency <
+                    incomingStrength.frequency
+                    ? "IMPROVING"
+                    : existingStrength.trend,
         };
     }
 
@@ -340,10 +371,10 @@ function aggregateMistakes(
     interviewId: string,
     occurredAt: string
 ): CandidateMistakeSummary[] {
-    const existing =
+    const mistakes =
         previousState?.previousMistakes ?? [];
 
-    const newMistakes =
+    const incoming =
         evaluation.mistakes.map(
             (mistake) => ({
                 topic: mistake.topic,
@@ -363,10 +394,41 @@ function aggregateMistakes(
             })
         );
 
-    return [
-        ...existing,
-        ...newMistakes,
-    ];
+    for (const incomingMistake of incoming) {
+
+        const incomingKey =
+            getMistakeKey(incomingMistake);
+
+        const existingIndex =
+            mistakes.findIndex(
+                (mistake) =>
+                    getMistakeKey(mistake) ===
+                    incomingKey
+            );
+
+        if (existingIndex === -1) {
+            mistakes.push(incomingMistake);
+            continue;
+        }
+
+        const existingMistake =
+            mistakes[existingIndex];
+
+        mistakes[existingIndex] = {
+            ...existingMistake,
+
+            severity:
+                incomingMistake.severity,
+
+            corrected:
+                incomingMistake.corrected,
+
+            occurredAt:
+                incomingMistake.occurredAt,
+        };
+        }
+
+    return mistakes;
 }
 
 export function aggregateCandidateState(
