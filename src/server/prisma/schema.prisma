@@ -62,6 +62,8 @@ model CandidateProfile {
 
   interviews InterviewSession[]
 
+  candidateState CandidateState?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -260,4 +262,16 @@ model InterviewEvaluation {
 
   @@index([overallScore])
   @@index([createdAt])
+}
+
+model CandidateState {
+  id String @id @default(cuid())
+
+  candidateProfileId String @unique
+
+  candidateProfile CandidateProfile @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+
+  state Json
+
+  updatedAt DateTime @updatedAt
 }

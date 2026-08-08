@@ -26,6 +26,7 @@ import {
     getTranscriptPersistenceData,
     clearTranscript,
 } from "./transcript/interview.transcript";
+import { updateCandidateState } from "../candidate/candidate.state.service";
 
 interface CompleteInterviewInput {
     sessionId: string;
@@ -85,44 +86,78 @@ export async function completeInterview({
             interviewMetadata
         });
 
-    await prisma.$transaction([
-        prisma.interviewMessage.createMany({
-            data: transcriptData,
-        }),
+    const persistedEvaluation =
+        await prisma.$transaction(
+            async (tx) => {
 
-        prisma.interviewEvaluation.create({
-            data: {
-                interviewSessionId:
-                    sessionId,
+                await tx.interviewMessage.createMany({
+                    data: transcriptData,
+                });
 
-                overallScore:
-                    artifact.overallScore,
+                const evaluation =
+                    await tx.interviewEvaluation.create({
+                        data: {
+                            interviewSessionId:
+                                sessionId,
 
-                technicalScore:
-                    artifact.technicalScore,
+                            overallScore:
+                                artifact.overallScore,
 
-                communicationScore:
-                    artifact.communicationScore,
+                            technicalScore:
+                                artifact.technicalScore,
 
-                artifact:
-                    artifact as unknown as Prisma.InputJsonValue,
+                            communicationScore:
+                                artifact.communicationScore,
+
+                            artifact:
+                                artifact as unknown as Prisma.InputJsonValue,
+                        },
+                    });
+
+                await tx.interviewSession.update({
+                    where: {
+                        id: sessionId,
+                    },
+
+                    data: {
+                        status: "COMPLETED",
+
+                        completedAt:
+                            new Date(),
+                    },
+                });
+
+                return evaluation;
+            }
+    );
+
+    await updateCandidateState({
+        candidateProfileId:
+            session.candidateId,
+
+        evaluationId:
+            persistedEvaluation.id,
+
+        interviewId:
+            sessionId,
+
+        evaluation: artifact,
+    });
+
+    await prisma.candidateProfile.update({
+        where: {
+            id: session.candidateId,
+        },
+
+        data: {
+            readinessScore:
+                artifact.overallScore,
+
+            interviewsTaken: {
+                increment: 1,
             },
-        }),
-
-        prisma.interviewSession.update({
-            where: {
-                id: sessionId,
-            },
-
-            data: {
-                status:
-                    "COMPLETED",
-
-                completedAt:
-                    new Date(),
-            },
-        }),
-    ]);
+        },
+    });
 
     await Promise.all([
         clearTranscript(sessionId),

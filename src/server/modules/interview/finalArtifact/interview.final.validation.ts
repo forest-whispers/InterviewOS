@@ -9,6 +9,11 @@ const strengthSchema = z.object({
     topic: z.string(),
 
     description: z.string(),
+
+    confidence: z
+        .number()
+        .min(0)
+        .max(10)
 });
 
 const weaknessSchema = z.object({

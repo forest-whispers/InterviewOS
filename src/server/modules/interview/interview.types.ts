@@ -3,6 +3,7 @@ import {
     Prisma,
 } from "@prisma/client";
 import { GeneratedInterviewQuestion } from "./question/interview.question.types";
+import { CommunicationProfile } from "../candidate/candidate.types";
 
 export interface WeaknessSummary {
     topic: string;
@@ -26,14 +27,6 @@ export interface CandidateMistakeSummary {
     description: string;
 
     severity: "LOW" | "MEDIUM" | "HIGH";
-}
-
-export interface CommunicationProfile {
-    clarity: number;
-
-    structure: number;
-
-    edgeCaseThinking: number;
 }
 
 export interface CandidateSnapshot {

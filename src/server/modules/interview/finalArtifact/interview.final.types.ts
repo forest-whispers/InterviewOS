@@ -24,6 +24,8 @@ export interface Strength {
     topic: string;
 
     description: string;
+
+    confidence: number;
 }
 
 export interface Weakness {

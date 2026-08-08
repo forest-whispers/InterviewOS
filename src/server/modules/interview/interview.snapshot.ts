@@ -1,46 +1,83 @@
-import { CandidateProfile } from "@prisma/client";
+import { prisma } from "@/server/config/db";
 
 import {
     CandidateSnapshot,
 } from "./interview.types";
+import { BadRequestError, NotFoundError } from "@/server/shared/errors/errors";
+import { getCandidateState } from "../candidate/candidate.state.service";
 
-type BuildCandidateSnapshotInput = {
-    candidate: CandidateProfile;
-};
+export async function buildCandidateSnapshot(
+    candidateProfileId: string,
+    interviewObjective: string
+): Promise<CandidateSnapshot> {
 
-export function buildCandidateSnapshot({
-    candidate,
-}: BuildCandidateSnapshotInput): CandidateSnapshot {
+    const candidateProfile =
+        await prisma.candidateProfile.findUnique({
+            where: {
+                id: candidateProfileId,
+            },
+            include: {
+                currentResume: true,
+            },
+        });
+
+    if (!candidateProfile) {
+        throw new NotFoundError(
+            "Candidate profile not found."
+        );
+    }
+
+    if (
+        !candidateProfile.targetRole ||
+        !candidateProfile.experienceLevel
+    ) {
+        throw new BadRequestError(
+            "Candidate profile is incomplete."
+        );
+    }
+
+    const candidateState =
+        await getCandidateState(
+            candidateProfileId
+        );
+
     return {
-        candidateId: candidate.id,
+        candidateId:
+            candidateProfile.id,
 
         targetRole:
-            candidate.targetRole ?? "Software Engineer",
+            candidateProfile.targetRole,
 
         experienceLevel:
-            candidate.experienceLevel ?? "STUDENT",
+            candidateProfile.experienceLevel,
 
         resumeSummary:
-            candidate.resumeSummary ?? "",
+            candidateProfile.resumeSummary ?? "",
 
         topSkills:
-            (candidate.topSkills as string[]) ?? [],
+            Array.isArray(
+                candidateProfile.topSkills
+            )
+                ? candidateProfile.topSkills as string[]
+                : [],
 
-        currentWeaknesses: [],
+        currentWeaknesses:
+            candidateState?.currentWeaknesses ?? [],
 
-        currentStrengths: [],
+        currentStrengths:
+            candidateState?.currentStrengths ?? [],
 
-        previousMistakes: [],
+        previousMistakes:
+            candidateState?.previousMistakes ?? [],
 
-        communicationProfile: {
-            clarity: 0,
+        communicationProfile:
+            candidateState?.communication ?? {
+                clarity: 0,
+                structure: 0,
+                conciseness: 0,
+                trend: "STABLE",
+            },
 
-            structure: 0,
-
-            edgeCaseThinking: 0,
-        },
-
-        interviewObjective:
-            "Evaluate technical knowledge and communication.",
+        interviewObjective,
     };
 }
