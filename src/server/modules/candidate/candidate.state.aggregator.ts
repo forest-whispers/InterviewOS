@@ -393,6 +393,7 @@ function aggregateStrengths(
     evaluation: EvaluationArtifact,
     occurredAt: string
 ): StrengthSummary[] {
+
     const existing =
         [...(previousState?.currentStrengths ?? [])];
 
@@ -400,46 +401,182 @@ function aggregateStrengths(
         ...existing,
     ];
 
-    for (const incomingStrength of evaluation.strengths) {
+    const weaknessTopics = new Set(
+        evaluation.weaknesses.map(
+            (weakness) =>
+                normalizeTopic(
+                    weakness.topic
+                )
+        )
+    );
+
+    const strengthTopics = new Set(
+        evaluation.strengths.map(
+            (strength) =>
+                normalizeTopic(
+                    strength.topic
+                )
+        )
+    );
+
+    /*
+     * Positive evidence.
+     *
+     * A demonstrated strength increases
+     * the accumulated strength evidence.
+     */
+    for (
+        const incomingStrength
+        of evaluation.strengths
+    ) {
+
+        const normalizedTopic =
+            normalizeTopic(
+                incomingStrength.topic
+            );
+
         const existingIndex =
             strengths.findIndex(
                 (strength) =>
-                    normalizeText(
+                    normalizeTopic(
                         strength.topic
-                    ) ===
-                    normalizeText(
-                        incomingStrength.topic
-                    )
+                    ) === normalizedTopic
             );
 
         if (existingIndex === -1) {
+
             strengths.push({
-                topic: incomingStrength.topic,
-                description: incomingStrength.description,
+                topic:
+                    incomingStrength.topic,
+
+                description:
+                    incomingStrength.description,
+
                 frequency: 1,
-                confidence: incomingStrength.confidence,
-                trend: "STABLE",
-                lastSeenAt: occurredAt
+
+                confidence:
+                    incomingStrength.confidence,
+
+                trend:
+                    "STABLE",
+
+                lastSeenAt:
+                    occurredAt,
             });
+
             continue;
         }
 
         const existingStrength =
             strengths[existingIndex];
 
+        const nextFrequency =
+            existingStrength.frequency + 1;
+
+        /*
+         * If the same topic appears as both
+         * a strength and weakness in this
+         * evaluation, keep the accumulated
+         * evidence stable.
+         */
+        const alsoWeak =
+            weaknessTopics.has(
+                normalizedTopic
+            );
+
         strengths[existingIndex] = {
             ...existingStrength,
 
-            frequency: existingStrength.frequency + 1,
+            frequency:
+                nextFrequency,
 
-            confidence: incomingStrength.confidence,
+            confidence:
+                incomingStrength.confidence,
 
-            description: incomingStrength.description,
+            description:
+                incomingStrength.description,
 
-            trend: calculateTrend(existingStrength.confidence, incomingStrength.confidence),
-            
-            lastSeenAt: occurredAt,
-            };
+            trend:
+                alsoWeak
+                    ? "STABLE"
+                    : "IMPROVING",
+
+            lastSeenAt:
+                occurredAt,
+        };
+    }
+
+    /*
+     * Negative evidence.
+     *
+     * A weakness on a topic reduces the
+     * accumulated strength evidence.
+     *
+     * If the same topic was also positively
+     * demonstrated in this evaluation,
+     * the two pieces of evidence cancel out.
+     */
+    for (
+        let index = strengths.length - 1;
+        index >= 0;
+        index--
+    ) {
+
+        const strength =
+            strengths[index];
+
+        const normalizedTopic =
+            normalizeTopic(
+                strength.topic
+            );
+
+        if (
+            !weaknessTopics.has(
+                normalizedTopic
+            )
+        ) {
+            continue;
+        }
+
+        /*
+         * Positive and negative evidence
+         * occurred in the same evaluation.
+         *
+         * Do not decrement the frequency.
+         */
+        if (
+            strengthTopics.has(
+                normalizedTopic
+            )
+        ) {
+            continue;
+        }
+
+        const nextFrequency =
+            Math.max(
+                0,
+                strength.frequency - 1
+            );
+
+        if (nextFrequency === 0) {
+
+            strengths.splice(
+                index,
+                1
+            );
+
+            continue;
+        }
+
+        strengths[index] = {
+            ...strength,
+
+            frequency:
+                nextFrequency,
+
+            trend:
+                "DECLINING",
+        };
     }
 
     return strengths;
