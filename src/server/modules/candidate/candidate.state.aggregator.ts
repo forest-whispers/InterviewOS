@@ -219,7 +219,15 @@ function calculateWeaknessTrend(
     nextFrequency: number
 ): "IMPROVING" | "STABLE" | "DECLINING" {
 
-    if (nextFrequency > previousFrequency) {
+    if (
+        nextFrequency < previousFrequency
+    ) {
+        return "IMPROVING";
+    }
+
+    if (
+        nextFrequency > previousFrequency
+    ) {
         return "DECLINING";
     }
 
@@ -239,7 +247,22 @@ function aggregateWeaknesses(
         ...existing,
     ];
 
-    for (const weakness of evaluation.weaknesses) {
+    const strengthTopics = new Set(
+        evaluation.strengths.map(
+            (strength) =>
+                normalizeTopic(
+                    strength.topic
+                )
+        )
+    );
+
+    /*
+     * First apply new weakness evidence.
+     */
+    for (
+        const weakness
+        of evaluation.weaknesses
+    ) {
 
         const normalizedTopic =
             normalizeTopic(
@@ -257,14 +280,16 @@ function aggregateWeaknesses(
         if (existingIndex === -1) {
 
             weaknesses.push({
-                topic: weakness.topic,
+                topic:
+                    weakness.topic,
 
                 frequency: 1,
 
                 severity:
                     weakness.severity,
 
-                trend: "STABLE",
+                trend:
+                    "STABLE",
 
                 firstSeenAt:
                     occurredAt,
@@ -307,6 +332,59 @@ function aggregateWeaknesses(
         };
     }
 
+    /*
+     * Then apply positive evidence.
+     *
+     * A strength on the same topic means
+     * the candidate demonstrated improvement.
+     */
+    for (let index = weaknesses.length - 1; index >= 0; index--) {
+
+        const weakness =
+            weaknesses[index];
+
+        const normalizedTopic =
+            normalizeTopic(
+                weakness.topic
+            );
+
+        if (!strengthTopics.has(normalizedTopic)) {
+            continue;
+        }
+
+        const previousFrequency =
+            weakness.frequency;
+
+        const nextFrequency =
+            Math.max(
+                0,
+                previousFrequency - 1
+            );
+
+        if (nextFrequency === 0) {
+
+            weaknesses.splice(
+                index,
+                1
+            );
+
+            continue;
+        }
+
+        weaknesses[index] = {
+            ...weakness,
+
+            frequency:
+                nextFrequency,
+
+            trend:
+                calculateWeaknessTrend(
+                    previousFrequency,
+                    nextFrequency
+                ),
+        };
+    }
+
     return weaknesses;
 }
 
@@ -316,7 +394,7 @@ function aggregateStrengths(
     occurredAt: string
 ): StrengthSummary[] {
     const existing =
-        previousState?.currentStrengths ?? [];
+        [...(previousState?.currentStrengths ?? [])];
 
     const strengths = [
         ...existing,
@@ -374,7 +452,7 @@ function aggregateMistakes(
     occurredAt: string
 ): CandidateMistakeSummary[] {
     const mistakes =
-        previousState?.previousMistakes ?? [];
+        [...(previousState?.previousMistakes ?? [])];
 
     const incoming =
         evaluation.mistakes.map(
