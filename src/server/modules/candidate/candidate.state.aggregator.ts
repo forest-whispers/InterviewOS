@@ -519,10 +519,9 @@ function aggregateStrengths(
             description:
                 incomingStrength.description,
 
-            trend:
-                alsoWeak
-                    ? "STABLE"
-                    : "IMPROVING",
+            trend: alsoWeak
+                ? "STABLE"
+                : calculateTrend(existingStrength.confidence, incomingStrength.confidence),
 
             lastSeenAt:
                 occurredAt,

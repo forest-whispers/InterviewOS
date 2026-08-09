@@ -31,7 +31,14 @@ Instructions:
 mistake (either from this session or from a previous interview) has been clearly corrected in the latest answer.
 - corrected: true only when the candidate demonstrates the correct concept.
 - corrected: false for new or repeated mistakes.
-- Match against both runtimeObservations.repeatedMistakes AND candidate.previousMistakes.
+When determining whether the candidate is correcting a previous
+mistake, match against:
+
+- runtimeObservations.repeatedMistakes
+- candidate.previousMistakes where corrected is false
+
+Do not treat previously corrected historical mistakes as active
+mistakes that need to be corrected again.
 
 5. Decide whether the interview difficulty should change.
 
