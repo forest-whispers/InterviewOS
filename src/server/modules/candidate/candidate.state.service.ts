@@ -25,9 +25,15 @@ type CandidateStateTransaction =
     Prisma.TransactionClient;
 
 export async function getCandidateState(
-    candidateProfileId: string
+    candidateProfileId: string,
+    tx?: CandidateStateTransaction,
 ): Promise<CandidateState | null> {
     const candidateState =
+        tx ? await tx.candidateState.findUnique({
+            where: {
+                candidateProfileId,
+            },
+        }) :
         await prisma.candidateState.findUnique({
             where: {
                 candidateProfileId,
@@ -61,7 +67,7 @@ export async function updateCandidateState({
     evaluation: EvaluationArtifact;
 }): Promise<CandidateState> {
     const candidateProfile =
-        await prisma.candidateProfile.findUnique({
+        await tx.candidateProfile.findUnique({
             where: {
                 id: candidateProfileId,
             },
@@ -75,7 +81,8 @@ export async function updateCandidateState({
 
     const existingState =
         await getCandidateState(
-            candidateProfileId
+            candidateProfileId,
+            tx
         );
 
     const nextState =
