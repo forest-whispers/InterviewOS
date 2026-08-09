@@ -3,34 +3,34 @@ import {
     Prisma,
 } from "@prisma/client";
 import { GeneratedInterviewQuestion } from "./question/interview.question.types";
-import { CommunicationProfile } from "../candidate/candidate.types";
+import { CandidateMistakeSummary, CommunicationProfile, StrengthSummary, WeaknessSummary } from "../candidate/candidate.types";
 import { RuntimeMistake } from "./evaluation/interview.evaluation.types";
 
-export interface WeaknessSummary {
-    topic: string;
+// export interface WeaknessSummary {
+//     topic: string;
 
-    severity: "LOW" | "MEDIUM" | "HIGH";
+//     severity: "LOW" | "MEDIUM" | "HIGH";
 
-    frequency: number;
+//     frequency: number;
 
-    trend: "IMPROVING" | "STABLE" | "DECLINING";
-}
+//     trend: "IMPROVING" | "STABLE" | "DECLINING";
+// }
 
-export interface StrengthSummary {
-    topic: string;
+// export interface StrengthSummary {
+//     topic: string;
 
-    confidence: number;
-}
+//     confidence: number;
+// }
 
-export interface CandidateMistakeSummary {
-    topic: string;
+// export interface CandidateMistakeSummary {
+//     topic: string;
 
-    description: string;
+//     description: string;
 
-    severity: "LOW" | "MEDIUM" | "HIGH";
+//     severity: "LOW" | "MEDIUM" | "HIGH";
 
-    corrected: boolean;
-}
+//     corrected: boolean;
+// }
 
 export interface CandidateSnapshot {
     candidateId: string;

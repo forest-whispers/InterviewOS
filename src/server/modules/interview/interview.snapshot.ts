@@ -75,6 +75,7 @@ export async function buildCandidateSnapshot(
                 clarity: 0,
                 structure: 0,
                 conciseness: 0,
+                observationCount: 0,
                 trend: "STABLE",
             },
 
