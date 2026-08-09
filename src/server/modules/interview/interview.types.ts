@@ -6,32 +6,6 @@ import { GeneratedInterviewQuestion } from "./question/interview.question.types"
 import { CandidateMistakeSummary, CommunicationProfile, StrengthSummary, WeaknessSummary } from "../candidate/candidate.types";
 import { RuntimeMistake } from "./evaluation/interview.evaluation.types";
 
-// export interface WeaknessSummary {
-//     topic: string;
-
-//     severity: "LOW" | "MEDIUM" | "HIGH";
-
-//     frequency: number;
-
-//     trend: "IMPROVING" | "STABLE" | "DECLINING";
-// }
-
-// export interface StrengthSummary {
-//     topic: string;
-
-//     confidence: number;
-// }
-
-// export interface CandidateMistakeSummary {
-//     topic: string;
-
-//     description: string;
-
-//     severity: "LOW" | "MEDIUM" | "HIGH";
-
-//     corrected: boolean;
-// }
-
 export interface CandidateSnapshot {
     candidateId: string;
 

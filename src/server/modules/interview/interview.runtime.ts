@@ -150,14 +150,17 @@ export function updateRuntimeObservations(
     return {
         ...interviewState,
 
+        // difficulty:
+        //     evaluation.difficultyAdjustment ===
+        //         "increase"
+        //         ? "hard"
+        //         : evaluation.difficultyAdjustment ===
+        //             "decrease"
+        //             ? "easy"
+        //             : interviewState.difficulty,
+
         difficulty:
-            evaluation.difficultyAdjustment ===
-                "increase"
-                ? "hard"
-                : evaluation.difficultyAdjustment ===
-                    "decrease"
-                    ? "easy"
-                    : interviewState.difficulty,
+            interviewState.difficulty,
 
         runtimeObservations: {
             ...interviewState.runtimeObservations,
