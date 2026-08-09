@@ -230,6 +230,7 @@ export async function startInterview({
         content: generatedQuestion.question,
 
         metadata: {
+            questionType: generatedQuestion.questionType || "NEW_QUESTION",
             topic: generatedQuestion.topic,
 
             difficulty: generatedQuestion.difficulty,

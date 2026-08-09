@@ -22,9 +22,13 @@ ${JSON.stringify(interviewPlan, null, 2)}
 
 Rules:
 
+- questionType MUST be "NEW_QUESTION".
+
 - Ask only ONE question.
 
 - The question should align with the interview plan.
+
+- Select an appropriate opening topic from the interview plan.
 
 - Do not evaluate the candidate.
 
@@ -36,7 +40,8 @@ Rules:
 
 - Do not ask multiple questions.
 
-- expectedCompetencies should describe the concepts the interviewer expects from a strong answer.
+- expectedCompetencies should describe the concepts
+  the interviewer expects from a strong answer.
 
 Return ONLY structured JSON.
 `;

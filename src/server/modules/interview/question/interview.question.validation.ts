@@ -2,6 +2,12 @@ import { z } from "zod";
 
 export const generatedInterviewQuestionSchema =
     z.object({
+        questionType: z.enum([
+            "FOLLOW_UP",
+            "NEW_QUESTION",
+            "CLARIFICATION",
+            "REDIRECT"
+        ]),
         question: z
             .string({
                 error: (i) => i.input === undefined ? "Question text is required" : "Question text must be a string",

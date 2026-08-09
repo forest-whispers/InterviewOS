@@ -76,7 +76,7 @@ export async function storeCandidateSnapshot(
     await setJSON(
         snapshotKey(sessionId),
         snapshot,
-        TTL.LONG
+        TTL.DAY
     );
 }
 

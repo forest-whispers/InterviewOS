@@ -12,6 +12,7 @@ import {
     clearInterviewState,
     getCandidateSnapshot,
     getInterviewState,
+    storeCandidateSnapshot,
 } from "./interview.redis";
 
 import {
@@ -29,6 +30,7 @@ import {
 } from "./transcript/interview.transcript";
 import { updateCandidateState } from "../candidate/candidate.state.service";
 import { buildRuntimeSummary } from "./interview.runtime";
+import { buildCandidateSnapshot } from "./interview.snapshot";
 
 interface CompleteInterviewInput {
     sessionId: string;
@@ -38,7 +40,7 @@ export async function completeInterview({
     sessionId,
 }: CompleteInterviewInput) {
 
-    const [
+    let [
         session,
         snapshot,
         turnEvaluations,
@@ -76,19 +78,23 @@ export async function completeInterview({
         );
     }
 
-    if (!snapshot) {
-        throw new BadRequestError(
-            "Candidate snapshot missing."
-        );
-    }
-
     if (!interviewState) {
         throw new BadRequestError(
             "Interview state missing."
         );
     }
 
-    let interviewMetadata = 
+    if (!snapshot) {
+        // Reconstruct dynamically from SQL DB 
+        snapshot = await buildCandidateSnapshot(
+            session.candidateId,
+            (session.interviewPlan as any)?.objective ?? ""
+        );
+        // Re-cache it to avoid repeating this check
+        await storeCandidateSnapshot(sessionId, snapshot);
+    }
+
+    let interviewMetadata =
         session.metadata &&
         typeof session.metadata === "object" &&
         !Array.isArray(session.metadata)

@@ -2,20 +2,21 @@ import { prisma } from "@/server/config/db";
 import { createId } from "@paralleldrive/cuid2";
 
 import { appendTurnEvaluation, getTurnEvaluations } from "./evaluation/interview.evaluation.redis";
-import { getCandidateSnapshot, getInterviewState, updateInterviewState } from "./interview.redis";
+import { getCandidateSnapshot, getInterviewState, storeCandidateSnapshot, updateInterviewState } from "./interview.redis";
 import { SubmitAnswerDto } from "./interview.types";
 import { appendTranscriptMessage, getTranscript } from "./transcript/interview.transcript";
 import { BadRequestError, NotFoundError } from "@/server/shared/errors/errors";
 import { buildInterviewContext } from "./evaluation/interview.evaluation.context";
 import { evaluateInterviewTurn } from "./evaluation/interview.evaluation.ai";
 import { advanceInterviewState, updateRuntimeObservations } from "./interview.runtime";
+import { buildCandidateSnapshot } from "./interview.snapshot";
 
 export async function submitAnswer({
     sessionId,
     answer,
 }: SubmitAnswerDto) {
 
-    const [
+    let [
         snapshot,
         interviewState,
         transcript,
@@ -49,22 +50,21 @@ export async function submitAnswer({
         );
     }
 
-    if (!snapshot) {
-        throw new BadRequestError(
-            "Candidate snapshot missing."
-        );
-    }
-
     if (!interviewState) {
         throw new BadRequestError(
             "Interview state missing."
         );
     }
 
-    // const latestTranscript = [
-    //     ...transcript,
-    //     userMessage,
-    // ];
+    if (!snapshot) {
+        // Reconstruct dynamically from SQL DB 
+        snapshot = await buildCandidateSnapshot(
+            session.candidateId,
+            (session.interviewPlan as any)?.objective ?? ""
+        );
+        // Re-cache it to avoid repeating this check
+        await storeCandidateSnapshot(sessionId, snapshot);
+    }
 
     const latestTranscript = transcript;
 
@@ -159,6 +159,9 @@ export async function submitAnswer({
             result.nextQuestion.question,
 
         metadata: {
+            questionType:
+                result.nextQuestion.questionType,
+ 
             topic:
                 result.nextQuestion.topic,
 
