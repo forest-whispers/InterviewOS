@@ -35,51 +35,61 @@ function addTopic(
 }
 
 export function buildInterviewPlan(
-    snapshot: CandidateSnapshot
+    snapshot: CandidateSnapshot,
+    customTopics?: string[]
 ): InterviewPlan {
     const topics: string[] = [];
 
-    /*
-     * Prioritize current weaknesses.
-     */
-    for (
-        const weakness
-        of snapshot.currentWeaknesses
-    ) {
-        addTopic(
-            topics,
-            weakness.topic
-        );
-    }
-
-    /*
-     * Then include unresolved
-     * previous mistakes.
-     */
-    for (
-        const mistake
-        of snapshot.previousMistakes
-    ) {
-        if (!mistake.corrected) {
+    if (customTopics && customTopics.length > 0) {
+        for (const topic of customTopics) {
             addTopic(
                 topics,
-                mistake.topic
+                topic
             );
         }
-    }
+    } else {
+        /*
+        * Prioritize current weaknesses.
+        */
+        for (
+            const weakness
+            of snapshot.currentWeaknesses
+        ) {
+            addTopic(
+                topics,
+                weakness.topic
+            );
+        }
 
-    /*
-     * Finally fill remaining slots
-     * with the candidate's top skills.
-     */
-    for (
-        const skill
-        of snapshot.topSkills
-    ) {
-        addTopic(
-            topics,
-            skill
-        );
+        /*
+         * Then include unresolved
+         * previous mistakes.
+         */
+        for (
+            const mistake
+            of snapshot.previousMistakes
+        ) {
+            if (!mistake.corrected) {
+                addTopic(
+                    topics,
+                    mistake.topic
+                );
+            }
+        }
+
+        /*
+         * Finally fill remaining slots
+         * with the candidate's top skills.
+         */
+        for (
+            const skill
+            of snapshot.topSkills
+        ) {
+            addTopic(
+                topics,
+                skill
+            );
+       }
     }
 
     return {
@@ -93,6 +103,6 @@ export function buildInterviewPlan(
             INTERVIEW_CONSTANTS.DEFAULT_QUESTION_COUNT,
 
         topics:
-            topics.slice(0, 5),
+            customTopics?.length==0 ? topics.slice(0, 5) : topics,
     };
 }

@@ -36,6 +36,9 @@ export const POST = createRouteHandler(
 
                 interviewObjective:
                     dto.interviewObjective,
+
+                topics:
+                    dto.topics,
             });
 
         return created({

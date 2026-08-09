@@ -19,6 +19,7 @@ import {
 
 import {
     CandidateSnapshot,
+    InterviewPlan,
     InterviewState,
 } from "./interview.types";
 
@@ -30,11 +31,13 @@ interface CreateInterviewInput {
     userId: string;
 
     interviewObjective: string;
+
+    topics?: string[];
 }
 
 function buildInterviewState(
     sessionId: string,
-    snapshot: CandidateSnapshot
+    interviewPlan: InterviewPlan
 ): InterviewState {
     const startedAt = new Date();
 
@@ -47,8 +50,7 @@ function buildInterviewState(
     return {
         sessionId,
 
-        interviewPlan:
-            buildInterviewPlan(snapshot),
+        interviewPlan: interviewPlan,
 
         currentQuestion: null,
 
@@ -82,6 +84,7 @@ function buildInterviewState(
 export async function createInterview({
     userId,
     interviewObjective,
+    topics
 }: CreateInterviewInput) {
     const candidate =
         await prisma.candidateProfile.findUnique({
@@ -115,7 +118,7 @@ export async function createInterview({
     console.log("interview:create, candidate snapshot: ", snapshot);
 
     const interviewPlan =
-        buildInterviewPlan(snapshot);
+        buildInterviewPlan(snapshot, topics);
 
     const session =
         await prisma.interviewSession.create({
@@ -137,7 +140,7 @@ export async function createInterview({
     const state =
         buildInterviewState(
             session.id,
-            snapshot
+            interviewPlan
         );
 
     console.log("interview:create, interview state: ", state);
