@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { AppError } from "@/server/shared/errors/AppError";
+import { ZodError } from "zod";
 
 type RouteContext = {
     params?: any;
@@ -19,6 +20,13 @@ export function createRouteHandler(handler: RouteHandler) {
         try {
             return await handler(request, context);
         } catch (error) {
+            if (error instanceof ZodError) {
+                const message = error.issues[0]?.message || "Validation failed";
+                return NextResponse.json(
+                    { message },
+                    { status: 422 }
+                );
+            }
             if (error instanceof AppError) {
                 return NextResponse.json(
                     {
