@@ -7,7 +7,7 @@ export const createInterviewSchema = z.object({
         })
         .trim()
         .min(5, { message: "Interview objective must be at least 5 characters long" })
-        .max(500, { message: "Interview objective cannot exceed 500 characters" }),
+        .max(10000, { message: "Interview objective cannot exceed 10000 characters" }),
 
     topics: z
         .array(
