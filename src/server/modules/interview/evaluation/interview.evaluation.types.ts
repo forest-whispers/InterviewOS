@@ -74,7 +74,7 @@ export interface MessageEvaluationMetadata {
         clarity: number;
         structure: number;
     };
-
+    
     mistakes: RuntimeMistake[];
 
     strengths: string[];

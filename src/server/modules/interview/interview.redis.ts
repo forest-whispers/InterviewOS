@@ -39,7 +39,7 @@ export async function createInterviewState(
     await setJSON(
         stateKey(state.sessionId),
         state,
-        TTL.LONG
+        TTL.DAY
     );
 }
 
@@ -49,7 +49,7 @@ export async function updateInterviewState(
     await setJSON(
         stateKey(state.sessionId),
         state,
-        TTL.LONG
+        TTL.DAY
     );
 }
 

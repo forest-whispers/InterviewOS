@@ -28,7 +28,7 @@ export async function appendTurnEvaluation(
     await appendToList(
         evaluationKey(sessionId),
         evaluation,
-        TTL.LONG
+        TTL.DAY
     );
 }
 
