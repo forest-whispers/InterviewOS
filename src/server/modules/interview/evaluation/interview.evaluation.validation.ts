@@ -101,6 +101,11 @@ export const turnEvaluationSchema =
             error: (i) => i.input === undefined ? "Difficulty adjustment is required" : "Difficulty adjustment must be increase, decrease, or same"
         }),
 
+        feedback: z
+            .string({
+                error: (i) => i.input === undefined ? "Feedback is required" : "Interviewer Feedback must be a string",
+            }),
+
         interviewerReasoning: z
             .string({
                 error: (i) => i.input === undefined ? "Interviewer reasoning is required" : "Interviewer reasoning must be a string",

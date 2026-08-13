@@ -18,7 +18,6 @@ import {
 } from "./interview.redis";
 
 import {
-    CandidateSnapshot,
     InterviewPlan,
     InterviewState,
 } from "./interview.types";

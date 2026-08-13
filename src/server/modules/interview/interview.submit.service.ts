@@ -111,6 +111,9 @@ export async function submitAnswer({
         strengths:
         result.evaluation.strengths,
 
+        feedback:
+        result.evaluation.feedback,
+
         followUpRequired:
         result.evaluation.followUpRequired,
     }

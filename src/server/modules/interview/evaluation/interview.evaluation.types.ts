@@ -40,6 +40,8 @@ export interface TurnEvaluation {
     | "decrease"
     | "same";
 
+    feedback: string;
+
     interviewerReasoning: string;
 }
 
@@ -76,6 +78,8 @@ export interface MessageEvaluationMetadata {
     mistakes: RuntimeMistake[];
 
     strengths: string[];
+
+    feedback: string;
 
     followUpRequired: boolean;
 }
