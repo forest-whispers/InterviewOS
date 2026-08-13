@@ -48,7 +48,8 @@ Mistakes:
    
    - technically incorrect claims.
    
-Only mistakes should appear in the mistakes array.
+Only current technical mistakes or explicit correction evidence for
+previously identified active mistakes should appear in the mistakes array.
 
 4. Generate candidate-facing feedback in a separate feedback field.
 The feedback is NOT interviewerReasoning, interviewerReasoning explains the evaluation internally.
@@ -254,11 +255,18 @@ This is CLARIFICATION.
 
 Mistake correction rules:
 
-- include corrected=true only when
-   - the candidate demonstrates the correct concept.
-   - a previously identified mistake (either from this session or from a previous interview) has been clearly corrected in the latest answer.
- 
- - corrected: false for new or repeated mistakes.
+- For a new or repeated technical mistake, use corrected=false.
+
+- If the latest answer clearly demonstrates the correct concept that
+  resolves a previously identified active mistake, include that
+  previously identified mistake in the mistakes array with corrected=true,
+  even though the latest answer does not contain a new technical mistake.
+
+- A corrected=true entry represents correction evidence, not a new
+  mistake in the latest answer.
+
+- Only include corrected=true when the candidate clearly demonstrates
+  the correct concept.
 
 - Ambiguity is neither a correction nor a technical mistake.
 
