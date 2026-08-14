@@ -2226,3 +2226,554 @@
   startedAt: '2026-08-13T18:05:40.545Z',
   expiresAt: '2026-08-13T20:05:40.545Z'
 }
+
+# INTERVIEW STARTING(sending interview objective and topics)
+{
+  "interviewObjective": "technical evaluation",
+  "topics": ["Database Indexing and Query Performance"]
+}
+
+=> candidate snapshot
+{
+  candidateId: 'cmsrod4wv00010nqocesx9hqj',
+  targetRole: 'Full-Stack & AI Engineer',
+  experienceLevel: 'STUDENT',
+  resumeSummary: 'Software Engineer specializing in Full-Stack and AI development, with experience building real-time collaborative tools, adaptive interview systems, healthcare management systems, and feedback intelligence platforms using modern JavaScript/TypeScript stacks, databases, and AI technologies.',
+  topSkills: [
+    'React',      'Next.js',
+    'Node.js',    'TypeScript',
+    'Socket.IO',  'RAG',
+    'LLM APIs',   'MongoDB',
+    'PostgreSQL'
+  ],
+  currentWeaknesses: [
+    {
+      topic: 'Multi-Column B-Tree Indexing',
+      frequency: 2,
+      severity: 'HIGH',
+      trend: 'DECLINING',
+      firstSeenAt: '2026-08-13T17:47:30.509Z',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    },
+    {
+      topic: 'CRDT Concurrency Control Mechanics',
+      frequency: 1,
+      severity: 'MEDIUM',
+      trend: 'STABLE',
+      firstSeenAt: '2026-08-13T17:47:30.509Z',
+      lastSeenAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Database Write Overhead',
+      frequency: 2,
+      severity: 'MEDIUM',
+      trend: 'DECLINING',
+      firstSeenAt: '2026-08-13T17:47:30.509Z',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    }
+  ],
+  currentStrengths: [
+    {
+      topic: 'RAG Architecture & Context Windows',
+      description: 'Demonstrated a strong operational understanding of RAG pipelines, vector similarity search, and distinguishing context injection from fine-tuning.',
+      frequency: 1,
+      confidence: 0.9,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Database Concurrency & Transactions',
+      description: 'Showed excellent grasp of atomic transactions, row-level locking mechanisms, and relational integrity constraints to prevent race conditions.',
+      frequency: 1,
+      confidence: 0.95,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Real-Time Collaborative Architecture',
+      description: 'Demonstrated an advanced understanding of designing scalable real-time systems using WebSockets, Redis Pub/Sub, and Yjs CRDTs for decentralized conflict resolution.',
+      frequency: 1,
+      confidence: 0.92,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    },
+    {
+      topic: 'RAG Architecture & Database Concurrency',
+      description: 'Exhibits strong command over vector context injection, atomic transactions, row-level locking, and mitigating database write overhead through asynchronous batching.',
+      frequency: 1,
+      confidence: 0.9,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    }
+  ],
+  previousMistakes: [
+    {
+      topic: 'RAG vs Fine-Tuning',
+      description: 'Claimed that retrieved documents fine-tune the LLM for each query, confusing context window insertion with weight updates.',
+      severity: 'HIGH',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: true,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Socket.IO Horizontal Scaling',
+      description: 'Assumed Yjs eliminated the need for Socket.IO servers to communicate via Redis Pub/Sub when scaled horizontally.',
+      severity: 'HIGH',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: true,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'CRDT Conflict Resolution Authority',
+      description: 'Stated that a central server evaluates CRDT metadata to pick winning edits during user synchronization.',
+      severity: 'MEDIUM',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: false,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Multi-Column B-Tree Index Traversal',
+      description: 'Claimed that composite index column order does not affect lookups, failing to account for the leftmost prefix requirement.',
+      severity: 'HIGH',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: false,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Index Write Performance Cost',
+      description: 'Claimed adding multiple indexes causes negligible write overhead during data modification operations.',
+      severity: 'MEDIUM',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: false,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'CRDT Conflict Resolution Authority',
+      description: 'Previously assumed a central server decides winning edits, but corrected this during the session by correctly articulating client-side Yjs CRDT merging.',
+      severity: 'MEDIUM',
+      interviewId: 'cmsrte3md00050nzc5dg1qpol',
+      corrected: true,
+      occurredAt: '2026-08-13T18:03:23.592Z'
+    },
+    {
+      topic: 'Multi-Column B-Tree Index Traversal',
+      description: 'Claimed that composite index column order does not affect lookup speed.',
+      severity: 'HIGH',
+      interviewId: 'cmsrte3md00050nzc5dg1qpol',
+      corrected: false,
+      occurredAt: '2026-08-13T18:03:23.592Z'
+    }
+  ],
+  communicationProfile: {
+    clarity: 8.75,
+    structure: 8.55,
+    conciseness: 8.25,
+    trend: 'IMPROVING',
+    observationCount: 2
+  },
+  interviewObjective: 'technical evaluation'
+}
+
+=> interview state
+{
+  sessionId: 'cmssb3gq800010nkg0fgkyyrv',
+  interviewPlan: {
+    role: 'Full-Stack & AI Engineer',
+    difficulty: 'medium',
+    estimatedQuestions: 10,
+    topics: [ 'Database Indexing and Query Performance' ]
+  },
+  currentQuestion: null,
+  questionNumber: 0,
+  currentTopic: null,
+  difficulty: 'medium',
+  runtimeObservations: {
+    repeatedMistakes: [],
+    correctedMistakes: [],
+    hintsGiven: 0,
+    topicsCovered: [],
+    skippedQuestions: 0
+  },
+  startedAt: '2026-08-14T02:06:46.120Z',
+  expiresAt: '2026-08-14T04:06:46.120Z'
+}
+
+# ANSWER and EVALUATION
+{
+    "interview": {
+        "evaluation": {
+            "questionNumber": 1,
+            "topic": "Database Indexing and Query Performance",
+            "score": 2,
+            "correctness": 2,
+            "strengths": [
+                "Recognized that column order in composite indexes impacts overall query performance."
+            ],
+            "mistakes": [
+                {
+                    "topic": "Multi-Column B-Tree Index Traversal",
+                    "description": "Claimed PostgreSQL can perform direct B-Tree lookups using only a non-leading column in a composite index.",
+                    "severity": "HIGH",
+                    "corrected": false
+                }
+            ],
+            "communication": {
+                "clarity": 8.5,
+                "structure": 8.5
+            },
+            "followUpRequired": true,
+            "difficultyAdjustment": "same",
+            "feedback": "You correctly recognized that column ordering in composite indexes impacts query efficiency. However, a composite B-Tree index is sorted hierarchically starting from the leftmost column. Filtering solely on a non-leading column like user_id prevents PostgreSQL from traversing the B-Tree directly, as index entries are strictly sorted by status first and created_at second.",
+            "interviewerReasoning": "The candidate incorrectly claimed that non-leading columns in a composite index can be used for direct B-Tree index lookups, repeating a previously identified failure to grasp the leftmost prefix rule."
+        },
+        "nextQuestion": "How does the hierarchical sorting of a composite B-Tree index on (status, created_at, user_id) prevent PostgreSQL from performing a direct B-Tree traversal when only user_id is provided in the WHERE clause?",
+        "topic": "Multi-Column B-Tree Index Traversal",
+        "difficulty": "medium"
+    },
+    "evaluatedAnswer": {
+        "id": "rwi54stsmaah7rh9dmn5nvtq",
+        "role": "user",
+        "content": "The order of columns in a composite B-tree index matters somewhat for efficiency, but PostgreSQL can still use the index to directly find rows based on any of the indexed columns. For example, with an index on (status, created_at, user_id), a query filtering only on user_id can still directly look up the matching entries in the index. It just may be less efficient than a query that also filters on status and created_at.",
+        "metadata": {
+            "score": 2,
+            "correctness": 2,
+            "communication": {
+                "clarity": 8.5,
+                "structure": 8.5
+            },
+            "mistakes": [
+                {
+                    "topic": "Multi-Column B-Tree Index Traversal",
+                    "description": "Claimed PostgreSQL can perform direct B-Tree lookups using only a non-leading column in a composite index.",
+                    "severity": "HIGH",
+                    "corrected": false
+                }
+            ],
+            "strengths": [
+                "Recognized that column order in composite indexes impacts overall query performance."
+            ],
+            "feedback": "You correctly recognized that column ordering in composite indexes impacts query efficiency. However, a composite B-Tree index is sorted hierarchically starting from the leftmost column. Filtering solely on a non-leading column like user_id prevents PostgreSQL from traversing the B-Tree directly, as index entries are strictly sorted by status first and created_at second.",
+            "followUpRequired": true
+        },
+        "createdAt": "2026-08-14T02:11:28.309Z"
+    }
+}
+
+=> interview turn evaluation
+{
+  evaluation: {
+    questionNumber: 1,
+    topic: 'Database Indexing and Query Performance',
+    score: 2,
+    correctness: 2,
+    strengths: [
+      'Recognized that column order in composite indexes impacts overall query performance.'
+    ],
+    mistakes: [ [Object] ],
+    communication: { clarity: 8.5, structure: 8.5 },
+    followUpRequired: true,
+    difficultyAdjustment: 'same',
+    feedback: 'You correctly recognized that column ordering in composite indexes impacts query efficiency. However, a composite B-Tree index is sorted hierarchically starting from the leftmost column. Filtering solely on a non-leading column like user_id prevents PostgreSQL from traversing the B-Tree directly, as index entries are strictly sorted by status first and created_at second.',
+    interviewerReasoning: 'The candidate incorrectly claimed that non-leading columns in a composite index can be used for direct B-Tree index lookups, repeating a previously identified failure to grasp the leftmost prefix rule.'
+  },
+  nextQuestion: {
+    questionType: 'FOLLOW_UP',
+    question: 'How does the hierarchical sorting of a composite B-Tree index on (status, created_at, user_id) prevent PostgreSQL from performing a direct B-Tree traversal when only user_id is provided in the WHERE clause?',
+    topic: 'Multi-Column B-Tree Index Traversal',
+    difficulty: 'medium',
+    expectedCompetencies: [
+      'Understanding of B-Tree key ordering and structure',
+      'Knowledge of the leftmost prefix rule during index traversal'
+    ]
+  }
+}
+
+=> advanced interview state
+{
+  sessionId: 'cmssb3gq800010nkg0fgkyyrv',
+  interviewPlan: {
+    role: 'Full-Stack & AI Engineer',
+    difficulty: 'medium',
+    estimatedQuestions: 10,
+    topics: [ 'Database Indexing and Query Performance' ]
+  },
+  currentQuestion: {
+    questionType: 'FOLLOW_UP',
+    question: 'How does the hierarchical sorting of a composite B-Tree index on (status, created_at, user_id) prevent PostgreSQL from performing a direct B-Tree traversal when only user_id is provided in the WHERE clause?',
+    topic: 'Multi-Column B-Tree Index Traversal',
+    difficulty: 'medium',
+    expectedCompetencies: [
+      'Understanding of B-Tree key ordering and structure',
+      'Knowledge of the leftmost prefix rule during index traversal'
+    ]
+  },
+  questionNumber: 2,
+  currentTopic: 'Multi-Column B-Tree Index Traversal',
+  difficulty: 'medium',
+  runtimeObservations: {
+    repeatedMistakes: [ [Object] ],
+    correctedMistakes: [],
+    hintsGiven: 0,
+    topicsCovered: [ 'Database Indexing and Query Performance' ],
+    skippedQuestions: 0
+  },
+  startedAt: '2026-08-14T02:06:46.120Z',
+  expiresAt: '2026-08-14T04:06:46.120Z'
+}
+
+# COMPLETION
+{
+    "evaluation": {
+        "overallScore": 5.2,
+        "technicalScore": 4,
+        "communicationScore": 8.5,
+        "technical": {
+            "dataStructures": 5,
+            "algorithms": 4.5,
+            "backend": 6,
+            "databases": 2,
+            "systemDesign": 5.5,
+            "problemSolving": 3
+        },
+        "communication": {
+            "clarity": 8.5,
+            "structure": 8.5,
+            "conciseness": 8.25
+        },
+        "strengths": [
+            {
+                "topic": "Composite Index Ordering Awareness",
+                "description": "Recognized that column ordering within composite indexes influences overall query performance.",
+                "confidence": 0.75
+            }
+        ],
+        "weaknesses": [
+            {
+                "topic": "Multi-Column B-Tree Indexing",
+                "description": "Struggles with the internal traversal mechanics of B-Tree indexes, specifically the leftmost prefix requirement for non-leading columns.",
+                "severity": "HIGH"
+            }
+        ],
+        "mistakes": [
+            {
+                "topic": "Multi-Column B-Tree Index Traversal",
+                "description": "Claimed that composite index column order does not affect lookup speed.",
+                "severity": "HIGH",
+                "corrected": true
+            },
+            {
+                "topic": "Multi-Column B-Tree Index Traversal",
+                "description": "Claimed PostgreSQL can perform direct B-Tree lookups using only a non-leading column in a composite index.",
+                "severity": "HIGH",
+                "corrected": false
+            }
+        ],
+        "behaviouralObservations": [
+            "Maintains structured and clear communication even when explaining incorrect technical assumptions.",
+            "Demonstrates willingness to refine earlier statements, though technical underlying principles remain partially misunderstood."
+        ],
+        "recommendations": [
+            "Study B-Tree data structures and PostgreSQL indexing mechanisms, focusing on how composite keys are ordered and why the leftmost prefix rule applies.",
+            "Practice analyzing query plans using EXPLAIN ANALYZE for queries filtering on non-leading composite index columns."
+        ],
+        "interviewSummary": "In this interview session focusing on database indexing and query performance, the candidate acknowledged that column order matters in composite indexes, resolving a prior misconception that order had no impact. However, they revealed a recurring weakness regarding B-Tree mechanics by asserting that PostgreSQL can execute direct B-Tree lookups on a non-leading column. While their communication remains clear and well-structured, additional technical grounding in relational database index traversal is recommended."
+    }
+}
+
+# INTERVIEW STARTING(sending interview objective and topics)
+=> candidate snapshot
+{
+  candidateId: 'cmsrod4wv00010nqocesx9hqj',
+  targetRole: 'Full-Stack & AI Engineer',
+  experienceLevel: 'STUDENT',
+  resumeSummary: 'Software Engineer specializing in Full-Stack and AI development, with experience building real-time collaborative tools, adaptive interview systems, healthcare management systems, and feedback intelligence platforms using modern JavaScript/TypeScript stacks, databases, and AI technologies.',
+  topSkills: [
+    'React',      'Next.js',
+    'Node.js',    'TypeScript',
+    'Socket.IO',  'RAG',
+    'LLM APIs',   'MongoDB',
+    'PostgreSQL'
+  ],
+  currentWeaknesses: [
+    {
+      topic: 'Multi-Column B-Tree Indexing',
+      frequency: 3,
+      severity: 'HIGH',
+      trend: 'DECLINING',
+      firstSeenAt: '2026-08-13T17:47:30.509Z',
+      lastSeenAt: '2026-08-14T02:15:15.925Z'
+    },
+    {
+      topic: 'CRDT Concurrency Control Mechanics',
+      frequency: 1,
+      severity: 'MEDIUM',
+      trend: 'STABLE',
+      firstSeenAt: '2026-08-13T17:47:30.509Z',
+      lastSeenAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Database Write Overhead',
+      frequency: 2,
+      severity: 'MEDIUM',
+      trend: 'DECLINING',
+      firstSeenAt: '2026-08-13T17:47:30.509Z',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    }
+  ],
+  currentStrengths: [
+    {
+      topic: 'RAG Architecture & Context Windows',
+      description: 'Demonstrated a strong operational understanding of RAG pipelines, vector similarity search, and distinguishing context injection from fine-tuning.',
+      frequency: 1,
+      confidence: 0.9,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Database Concurrency & Transactions',
+      description: 'Showed excellent grasp of atomic transactions, row-level locking mechanisms, and relational integrity constraints to prevent race conditions.',
+      frequency: 1,
+      confidence: 0.95,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Real-Time Collaborative Architecture',
+      description: 'Demonstrated an advanced understanding of designing scalable real-time systems using WebSockets, Redis Pub/Sub, and Yjs CRDTs for decentralized conflict resolution.',
+      frequency: 1,
+      confidence: 0.92,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    },
+    {
+      topic: 'RAG Architecture & Database Concurrency',
+      description: 'Exhibits strong command over vector context injection, atomic transactions, row-level locking, and mitigating database write overhead through asynchronous batching.',
+      frequency: 1,
+      confidence: 0.9,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-13T18:03:23.592Z'
+    },
+    {
+      topic: 'Composite Index Ordering Awareness',
+      description: 'Recognized that column ordering within composite indexes influences overall query performance.',
+      frequency: 1,
+      confidence: 0.75,
+      trend: 'STABLE',
+      lastSeenAt: '2026-08-14T02:15:15.925Z'
+    }
+  ],
+  previousMistakes: [
+    {
+      topic: 'RAG vs Fine-Tuning',
+      description: 'Claimed that retrieved documents fine-tune the LLM for each query, confusing context window insertion with weight updates.',
+      severity: 'HIGH',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: true,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Socket.IO Horizontal Scaling',
+      description: 'Assumed Yjs eliminated the need for Socket.IO servers to communicate via Redis Pub/Sub when scaled horizontally.',
+      severity: 'HIGH',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: true,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'CRDT Conflict Resolution Authority',
+      description: 'Stated that a central server evaluates CRDT metadata to pick winning edits during user synchronization.',
+      severity: 'MEDIUM',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: false,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Multi-Column B-Tree Index Traversal',
+      description: 'Claimed that composite index column order does not affect lookups, failing to account for the leftmost prefix requirement.',
+      severity: 'HIGH',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: false,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'Index Write Performance Cost',
+      description: 'Claimed adding multiple indexes causes negligible write overhead during data modification operations.',
+      severity: 'MEDIUM',
+      interviewId: 'cmsrojpmb00120nqofbibjisc',
+      corrected: false,
+      occurredAt: '2026-08-13T17:47:30.509Z'
+    },
+    {
+      topic: 'CRDT Conflict Resolution Authority',
+      description: 'Previously assumed a central server decides winning edits, but corrected this during the session by correctly articulating client-side Yjs CRDT merging.',
+      severity: 'MEDIUM',
+      interviewId: 'cmsrte3md00050nzc5dg1qpol',
+      corrected: true,
+      occurredAt: '2026-08-13T18:03:23.592Z'
+    },
+    {
+      topic: 'Multi-Column B-Tree Index Traversal',
+      description: 'Claimed that composite index column order does not affect lookup speed.',
+      severity: 'HIGH',
+      interviewId: 'cmsrte3md00050nzc5dg1qpol',
+      corrected: true,
+      occurredAt: '2026-08-14T02:15:15.925Z'
+    },
+    {
+      topic: 'Multi-Column B-Tree Index Traversal',
+      description: 'Claimed PostgreSQL can perform direct B-Tree lookups using only a non-leading column in a composite index.',
+      severity: 'HIGH',
+      interviewId: 'cmssb3gq800010nkg0fgkyyrv',
+      corrected: false,
+      occurredAt: '2026-08-14T02:15:15.925Z'
+    }
+  ],
+  communicationProfile: {
+    clarity: 8.67,
+    structure: 8.53,
+    conciseness: 8.25,
+    trend: 'STABLE',
+    observationCount: 3
+  },
+  interviewObjective: 'regular'
+}
+
+=> interview state
+{
+  sessionId: 'cmssbic3l00070nkgvejpvddm',
+  interviewPlan: {
+    role: 'Full-Stack & AI Engineer',
+    difficulty: 'medium',
+    estimatedQuestions: 10,
+    topics: [
+      'Multi-Column B-Tree Indexing',
+      'CRDT Concurrency Control Mechanics',
+      'Database Write Overhead',
+      'CRDT Conflict Resolution Authority',
+      'Multi-Column B-Tree Index Traversal',
+      'Index Write Performance Cost',
+      'React',
+      'Next.js',
+      'Node.js',
+      'TypeScript',
+      'Socket.IO',
+      'RAG',
+      'LLM APIs',
+      'MongoDB',
+      'PostgreSQL'
+    ]
+  },
+  currentQuestion: null,
+  questionNumber: 0,
+  currentTopic: null,
+  difficulty: 'medium',
+  runtimeObservations: {
+    repeatedMistakes: [],
+    correctedMistakes: [],
+    hintsGiven: 0,
+    topicsCovered: [],
+    skippedQuestions: 0
+  },
+  startedAt: '2026-08-14T02:18:19.892Z',
+  expiresAt: '2026-08-14T04:18:19.892Z'
+}

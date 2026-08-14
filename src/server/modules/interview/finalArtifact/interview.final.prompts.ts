@@ -62,23 +62,50 @@ appropriate fields such as severity or corrected status.
 
 2. EXISTING MISTAKE — UPDATED REPRESENTATION
 
-Sometimes the current interview provides enough evidence to justify a more
-precise or meaningfully different topic/description for a historical mistake.
+Sometimes the current interview provides enough evidence that a historical
+mistake is still present, but the current Turn Evaluations describe that
+mistake more precisely or identify a meaningfully more specific
+representation.
 
-In that case, do NOT simply replace the historical mistake.
+In that case, treat this as a REPRESENTATION TRANSITION, not as a correction
+of the underlying mistake.
 
-Instead:
+Return BOTH representations:
 
-- Return the historical mistake using its EXACT original "topic" and
-  "description" and set "corrected": true.
-- Also return the newly formulated mistake using its new topic and
-  description with "corrected": false if the mistake remains present.
+- Return the historical mistake using its EXACT original "topic" and EXACT
+  original "description" with "corrected": true.
+- Return the newer, more precise representation using its new "topic" and
+  "description" with "corrected": false.
 
-This explicitly tells the backend that the old representation should be
-retired and the new representation should become the active mistake.
+The purpose of "corrected": true on the historical representation is to tell
+the backend that this historical representation is being retired/replaced.
+It does NOT mean that the candidate corrected the underlying conceptual
+mistake.
 
-Only do this when the new representation is genuinely more precise or
-meaningfully different. Do not do it merely because the wording differs.
+The backend may reduce the historical mistake's frequency and eventually
+remove it when its frequency reaches zero, while the newer representation
+becomes a new active mistake.
+
+Only perform this representation transition when the newer representation
+is genuinely more precise or meaningfully different in conceptual scope.
+Do not perform it merely because the wording differs.
+
+For example, if the historical mistake is:
+
+{
+  "topic": "Multi-Column B-Tree Index Traversal",
+  "description": "Claimed that composite index column order does not affect lookup speed."
+}
+
+and the current interview identifies a more specific mistake:
+
+{
+  "topic": "Multi-Column B-Tree Index Traversal",
+  "description": "Claimed PostgreSQL can perform direct B-Tree lookups using only a non-leading column in a composite index."
+}
+
+then return both representations, with the historical representation marked
+"corrected": true and the newer representation marked "corrected": false.
 
 3. NEW MISTAKE
 
@@ -100,13 +127,22 @@ topic, and description—not by topic alone.
 Do not merge distinct mistakes merely because they share a broad topic such
 as "React", "PostgreSQL", "Redis", or "System Design".
 
-6. CORRECTION
+6. ACTUAL CORRECTION
 
-If the current interview demonstrates that a historical mistake has been
-corrected, return the historical mistake using its EXACT original topic and
-description with "corrected": true.
+If the current interview provides positive evidence that the candidate has
+actually corrected the underlying conceptual mistake, return the historical
+mistake using its EXACT original "topic" and EXACT original "description"
+with "corrected": true.
 
-Do not silently rename a corrected historical mistake.
+Do not mark a mistake as corrected merely because its representation is
+being replaced by a more precise representation.
+
+In a representation transition under rule 2, "corrected": true means only
+that the OLD REPRESENTATION is being retired. The newer representation must
+remain "corrected": false if the underlying mistake is still present.
+
+Do not silently rename a historical mistake when marking an actual
+correction.
 
 Return ONLY structured JSON.
 `;
