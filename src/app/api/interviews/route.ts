@@ -10,9 +10,37 @@ import { created } from "@/server/shared/http/response";
 
 import { UnauthorizedError } from "@/server/shared/errors/errors";
 
-import { createInterviewSchema } from "@/server/modules/interview/interview.validation";
+import { createInterviewSchema, getInterviewsQuerySchema } from "@/server/modules/interview/interview.validation";
 
 import { createInterview } from "@/server/modules/interview/interview.start.service";
+
+import { getQuery } from "@/server/shared/http/query";
+import { ok } from "@/server/shared/http/response";
+import { getCandidateInterviews } from "@/server/modules/interview/interview.history.service";
+
+export const GET = createRouteHandler(
+    async (request: NextRequest) => {
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            throw new UnauthorizedError(
+                "Authentication required."
+            );
+        }
+
+        const queryParams = getQuery(request);
+        const validatedQuery = getInterviewsQuerySchema.parse(queryParams);
+
+        const result = await getCandidateInterviews({
+            userId: session.user.id,
+            page: validatedQuery.page,
+            limit: validatedQuery.limit,
+            status: validatedQuery.status,
+        });
+
+        return ok(result);
+    }
+);
 
 export const POST = createRouteHandler(
     async (request: NextRequest) => {
