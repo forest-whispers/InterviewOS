@@ -129,6 +129,7 @@ export async function completeInterview({
 
                 await tx.interviewMessage.createMany({
                     data: transcriptData,
+                    skipDuplicates: true,
                 });
 
                 const evaluation =

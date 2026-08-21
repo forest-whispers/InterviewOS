@@ -205,6 +205,8 @@ model InterviewSession {
 
   evaluation InterviewEvaluation?
 
+  runtimeState InterviewRuntimeState?
+
   startedAt DateTime?
 
   completedAt DateTime?
@@ -274,4 +276,24 @@ model CandidateState {
   state Json
 
   updatedAt DateTime @updatedAt
+}
+
+model InterviewRuntimeState {
+  id String @id @default(cuid())
+
+  interviewSessionId String @unique
+
+  interviewSession InterviewSession @relation(fields: [interviewSessionId], references: [id], onDelete: Cascade)
+
+  startedAt DateTime
+
+  expiresAt DateTime
+
+  metadata Json
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
 }
