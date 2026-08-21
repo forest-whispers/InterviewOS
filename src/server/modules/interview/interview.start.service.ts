@@ -25,6 +25,8 @@ import {
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 import { Prisma } from "@prisma/client";
 import { appendTranscriptMessage, clearTranscript, } from "./transcript/interview.transcript";
+import { TurnEvaluation } from "./evaluation/interview.evaluation.types";
+import { appendTurnEvaluation, clearTurnEvaluations } from "./evaluation/interview.evaluation.redis";
 
 interface CreateInterviewInput {
     userId: string;
@@ -386,6 +388,9 @@ export async function startInterview({
 
                 runtimeObservations:
                 InterviewState["runtimeObservations"];
+
+                turnEvaluations:
+                TurnEvaluation[];
             };
 
         if (!metadata.currentQuestion) {
@@ -496,6 +501,22 @@ export async function startInterview({
         await updateInterviewState(
             restoredState
         );
+
+        /*
+        * The abandoned flow cleared Redis, but clearing
+        * here as well makes resume idempotent if stale
+        * Redis data happens to exist.
+        */
+        await clearTurnEvaluations(
+            sessionId
+        );
+
+        for (const evaluation of metadata.turnEvaluations ?? []) {
+            await appendTurnEvaluation(
+                sessionId,
+                evaluation
+            );
+        }
 
         /*
          * The PostgreSQL checkpoint has served its
