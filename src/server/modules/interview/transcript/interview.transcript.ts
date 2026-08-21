@@ -24,6 +24,8 @@ interface AppendTranscriptInput {
     metadata?: TranscriptMessage["metadata"];
 
     id?: string;
+
+    createdAt?: string;
 }
 
 export async function appendTranscriptMessage({
@@ -31,7 +33,8 @@ export async function appendTranscriptMessage({
     role,
     content,
     metadata,
-    id
+    id,
+    createdAt
 }: AppendTranscriptInput) {
     const message: TranscriptMessage = {
         id: id ?? createId(),
@@ -42,8 +45,7 @@ export async function appendTranscriptMessage({
 
         metadata,
 
-        createdAt:
-            new Date().toISOString(),
+        createdAt: createdAt ? createdAt : new Date().toISOString(),
     };
 
     await appendToList(

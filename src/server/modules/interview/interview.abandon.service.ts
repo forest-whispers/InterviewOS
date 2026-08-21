@@ -20,6 +20,7 @@ import {
 
 import {
     clearTurnEvaluations,
+    getTurnEvaluations,
 } from "./evaluation/interview.evaluation.redis";
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
@@ -36,6 +37,7 @@ export async function abandonInterview({
         session,
         interviewState,
         transcriptData,
+        turnEvaluations,
     ] = await Promise.all([
         prisma.interviewSession.findUnique({
             where: {
@@ -48,6 +50,10 @@ export async function abandonInterview({
         ),
 
         getTranscriptPersistenceData(
+            sessionId
+        ),
+
+        getTurnEvaluations(
             sessionId
         ),
     ]);
@@ -107,6 +113,8 @@ export async function abandonInterview({
 
         runtimeObservations:
             interviewState.runtimeObservations,
+
+        turnEvaluations
     };
 
     const toPrismaJson = (

@@ -24,7 +24,7 @@ import {
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 import { Prisma } from "@prisma/client";
-import { appendTranscriptMessage, } from "./transcript/interview.transcript";
+import { appendTranscriptMessage, clearTranscript, } from "./transcript/interview.transcript";
 
 interface CreateInterviewInput {
     userId: string;
@@ -171,18 +171,13 @@ interface StartInterviewInput {
 export async function startInterview({
     sessionId,
 }: StartInterviewInput) {
-    const [snapshot, state, session] =
-        await Promise.all([
-            getCandidateSnapshot(sessionId),
 
-            getInterviewState(sessionId),
-
-            prisma.interviewSession.findUnique({
-                where: {
-                    id: sessionId,
-                },
-            }),
-        ]);
+    const session =
+        await prisma.interviewSession.findUnique({
+            where: {
+                id: sessionId,
+            },
+        });
 
     if (!session) {
         throw new NotFoundError(
@@ -190,81 +185,405 @@ export async function startInterview({
         );
     }
 
-    if (!snapshot) {
-        throw new BadRequestError(
-            "Candidate snapshot not found."
-        );
-    }
+    /*
+    * --------------------------------------------------
+    * NEW INTERVIEW
+    * --------------------------------------------------
+    */
 
-    if (!state) {
-        throw new BadRequestError(
-            "Interview state not found."
-        );
-    }
+    if (session.status === "CREATED") {
 
-    if (session.status !== "CREATED") {
-        throw new BadRequestError(
-            "Interview has already been started."
-        );
-    }
-
-    const generatedQuestion =
-        await generateOpeningQuestion(
+        let [
             snapshot,
-            state.interviewPlan
+            state,
+        ] = await Promise.all([
+            getCandidateSnapshot(
+                sessionId
+            ),
+
+            getInterviewState(
+                sessionId
+            ),
+        ]);
+
+        if (!snapshot) {
+            throw new BadRequestError(
+                "Candidate snapshot not found."
+            );
+        }
+
+        if (!state) {
+            throw new BadRequestError(
+                "Interview state not found."
+            );
+        }
+
+        const generatedQuestion =
+            await generateOpeningQuestion(
+                snapshot,
+                state.interviewPlan
+            );
+
+        const startedAt =
+            new Date();
+
+        const expiresAt =
+            new Date(
+                startedAt.getTime() +
+                INTERVIEW_CONSTANTS
+                    .SESSION_TTL_SECONDS *
+                1000
+            );
+
+        await prisma.interviewSession.update({
+            where: {
+                id: sessionId,
+            },
+
+            data: {
+                status: "IN_PROGRESS",
+
+                startedAt,
+            },
+        });
+
+        await appendTranscriptMessage({
+            sessionId,
+
+            role: "assistant",
+
+            content:
+                generatedQuestion.question,
+
+            metadata: {
+                questionType: generatedQuestion.questionType || "NEW_QUESTION",
+
+                topic:
+                    generatedQuestion.topic,
+
+                difficulty:
+                    generatedQuestion.difficulty,
+
+                expectedCompetencies:
+                    generatedQuestion.expectedCompetencies,
+            },
+        });
+
+        state = {
+            ...state,
+
+            currentQuestion:
+                generatedQuestion,
+
+            questionNumber: 1,
+
+            currentTopic:
+                generatedQuestion.topic,
+
+            difficulty:
+                generatedQuestion.difficulty,
+
+            startedAt:
+                startedAt.toISOString(),
+
+            expiresAt:
+                expiresAt.toISOString(),
+        };
+
+        await updateInterviewState(
+            state
         );
 
-    await prisma.interviewSession.update({
-        where: {
-            id: sessionId,
-        },
-        data: {
-            status: "IN_PROGRESS",
-            startedAt: new Date(),
-        },
-    });
+        return {
+            sessionId,
 
-    await appendTranscriptMessage({
-        sessionId,
+            messages: [],
 
-        role: "assistant",
+            currentQuestion: {
+                question:
+                    generatedQuestion.question,
 
-        content: generatedQuestion.question,
+                topic:
+                    generatedQuestion.topic,
 
-        metadata: {
-            questionType: generatedQuestion.questionType || "NEW_QUESTION",
-            topic: generatedQuestion.topic,
+                difficulty:
+                    generatedQuestion.difficulty,
+            },
+        };
+    }
 
-            difficulty: generatedQuestion.difficulty,
+    /*
+    * --------------------------------------------------
+    * RESUME ABANDONED INTERVIEW
+    * --------------------------------------------------
+    */
 
-            expectedCompetencies:
-                generatedQuestion.expectedCompetencies,
-        },
-    });
+    if (session.status === "ABANDONED") {
 
-    state.currentQuestion =
-        generatedQuestion;
+        const runtimeState =
+            await prisma.interviewRuntimeState.findUnique({
+                where: {
+                    interviewSessionId:
+                        sessionId,
+                },
+            });
 
-    state.questionNumber = 1;
+        if (!runtimeState) {
+            throw new BadRequestError(
+                "This interview can no longer be resumed."
+            );
+        }
 
-    state.currentTopic =
-        generatedQuestion.topic;
+    /*
+     * Restore the candidate snapshot because it was
+     * intentionally removed from Redis when the
+     * interview was abandoned.
+     */
 
-    state.difficulty =
-        generatedQuestion.difficulty;
+        let snapshot =
+            await getCandidateSnapshot(
+                sessionId
+            );
 
-    await updateInterviewState(state);
+        if (!snapshot) {
+            snapshot =
+                await buildCandidateSnapshot(
+                    session.candidateId,
 
-    return {
-        sessionId,
+                    (
+                        session.interviewPlan as {
+                            objective?: string;
+                        }
+                    )?.objective ?? ""
+                );
 
-        question:
-            generatedQuestion.question,
+            await storeCandidateSnapshot(
+                sessionId,
+                snapshot
+            );
+        }
 
-        topic:
-            generatedQuestion.topic,
+        /*
+        * Restore the InterviewState from the
+        * PostgreSQL checkpoint.
+        */
+        const metadata =
+            runtimeState.metadata as unknown as {
+                interviewPlan:
+                InterviewState["interviewPlan"];
 
-        difficulty:
-            generatedQuestion.difficulty,
-    };
+                currentQuestion:
+                InterviewState["currentQuestion"];
+
+                questionNumber:
+                InterviewState["questionNumber"];
+
+                currentTopic:
+                InterviewState["currentTopic"];
+
+                difficulty:
+                InterviewState["difficulty"];
+
+                runtimeObservations:
+                InterviewState["runtimeObservations"];
+            };
+
+        if (!metadata.currentQuestion) {
+            throw new BadRequestError(
+                "Interview runtime state is invalid."
+            );
+        }
+
+        const resumedAt =
+            new Date();
+
+        const expiresAt =
+            new Date(
+                resumedAt.getTime() +
+                INTERVIEW_CONSTANTS
+                    .SESSION_TTL_SECONDS *
+                1000
+            );
+
+        const restoredState:
+            InterviewState = {
+            sessionId,
+
+            interviewPlan:
+                metadata.interviewPlan,
+
+            currentQuestion:
+                metadata.currentQuestion,
+
+            questionNumber:
+                metadata.questionNumber,
+
+            currentTopic:
+                metadata.currentTopic,
+
+            difficulty:
+                metadata.difficulty,
+
+            runtimeObservations:
+                metadata.runtimeObservations,
+
+            startedAt:
+                resumedAt.toISOString(),
+
+            expiresAt:
+                expiresAt.toISOString(),
+        };
+
+        /*
+         * PostgreSQL already contains the complete
+         * transcript from the abandonment.
+         *
+         * Keep the original message IDs when putting
+         * those messages back into Redis.
+         */
+        const persistedMessages =
+            await prisma.interviewMessage.findMany({
+                where: {
+                    interviewSessionId:
+                        sessionId,
+                },
+
+                orderBy: {
+                    createdAt: "asc",
+                },
+            });
+
+        /*
+         * The abandoned flow cleared Redis, but clearing
+         * here as well makes resume idempotent if stale
+         * Redis data happens to exist.
+         */
+        await clearTranscript(
+            sessionId
+        );
+
+        for (
+            const message
+            of persistedMessages
+        ) {
+            await appendTranscriptMessage({
+                sessionId,
+
+                id:
+                    message.id,
+                
+                role:
+                    message.role
+                        .toLowerCase() as
+                    "assistant" | "user",
+
+                content:
+                    message.content,
+
+                metadata:
+                    message.metadata
+                        ? message.metadata as any
+                        : undefined,
+
+                createdAt:
+                    message.createdAt.toISOString(),
+            });
+        }
+
+        /*
+         * Put the reconstructed active state back into Redis.
+         */
+        await updateInterviewState(
+            restoredState
+        );
+
+        /*
+         * The PostgreSQL checkpoint has served its
+         * purpose. Once the active state and transcript
+         * are restored, the interview can continue
+         * normally through /answer.
+         */
+
+        await prisma.$transaction(
+            async (tx) => {
+
+                await tx.interviewSession.update({
+                    where: {
+                        id: sessionId,
+                    },
+
+                    data: {
+                        status:
+                            "IN_PROGRESS",
+
+                        startedAt:
+                            resumedAt,
+                    },
+                });
+
+                await tx.interviewRuntimeState.delete({
+                    where: {
+                        interviewSessionId:
+                            sessionId,
+                    },
+                });
+            }
+        );
+
+        return {
+            sessionId,
+
+            messages:
+                persistedMessages.map(
+                    (message) => ({
+                        id:
+                            message.id,
+
+                        role:
+                            message.role
+                                .toLowerCase() as
+                            "assistant" | "user",
+
+                        content:
+                            message.content,
+
+                        metadata:
+                            message.metadata
+                                ? message.metadata as any
+                                : undefined,
+
+                        createdAt:
+                            message.createdAt
+                                .toISOString(),
+                    })
+                ),
+
+            currentQuestion: {
+                question:
+                    restoredState
+                        .currentQuestion!
+                        .question,
+
+                topic:
+                    restoredState
+                        .currentQuestion!
+                        .topic,
+
+                difficulty:
+                    restoredState
+                        .currentQuestion!
+                        .difficulty,
+            },
+        };
+    }
+
+    /*
+     * --------------------------------------------------
+     * COMPLETED / IN_PROGRESS / ANY OTHER STATUS
+     * --------------------------------------------------
+     */
+
+    throw new BadRequestError(
+        "Interview cannot be started."
+    );
 }
