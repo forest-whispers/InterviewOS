@@ -540,6 +540,9 @@ export async function startInterview({
 
                         startedAt:
                             resumedAt,
+
+                        abandonedAt:
+                            null,
                     },
                 });
 
