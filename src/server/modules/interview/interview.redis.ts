@@ -6,7 +6,7 @@ import {
 
 import { makeKey } from "@/server/shared/redis/keys";
 
-import { TTL } from "@/server/shared/redis/ttl";
+import { INTERVIEW_TTL } from "@/server/shared/redis/ttl";
 
 import type {
     CandidateSnapshot,
@@ -39,7 +39,7 @@ export async function createInterviewState(
     await setJSON(
         stateKey(state.sessionId),
         state,
-        TTL.DAY
+        INTERVIEW_TTL.STATE
     );
 }
 
@@ -49,7 +49,7 @@ export async function updateInterviewState(
     await setJSON(
         stateKey(state.sessionId),
         state,
-        TTL.DAY
+        INTERVIEW_TTL.STATE
     );
 }
 
@@ -76,7 +76,7 @@ export async function storeCandidateSnapshot(
     await setJSON(
         snapshotKey(sessionId),
         snapshot,
-        TTL.DAY
+        INTERVIEW_TTL.SNAPSHOT
     );
 }
 

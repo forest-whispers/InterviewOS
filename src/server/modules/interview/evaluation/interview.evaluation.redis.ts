@@ -5,7 +5,7 @@ import {
 } from "@/server/shared/redis/list";
 
 import { makeKey } from "@/server/shared/redis/keys";
-import { TTL } from "@/server/shared/redis/ttl";
+import { INTERVIEW_TTL } from "@/server/shared/redis/ttl";
 
 import type {
     TurnEvaluation,
@@ -28,7 +28,7 @@ export async function appendTurnEvaluation(
     await appendToList(
         evaluationKey(sessionId),
         evaluation,
-        TTL.DAY
+        INTERVIEW_TTL.TURN_EVALUATIONS
     );
 }
 

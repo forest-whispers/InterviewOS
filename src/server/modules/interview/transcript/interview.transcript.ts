@@ -6,7 +6,7 @@ import {
     deleteList,
 } from "@/server/shared/redis/list";
 
-import { TTL } from "@/server/shared/redis/ttl";
+import { INTERVIEW_TTL } from "@/server/shared/redis/ttl";
 
 import type {
     TranscriptMessage
@@ -52,7 +52,7 @@ export async function appendTranscriptMessage({
     await appendToList(
         transcriptKey(sessionId),
         message,
-        TTL.LONG
+        INTERVIEW_TTL.TRANSCRIPT
     );
 
     return message;
