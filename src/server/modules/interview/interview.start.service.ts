@@ -467,33 +467,31 @@ export async function startInterview({
             sessionId
         );
 
-        for (
-            const message
-            of persistedMessages
-        ) {
-            await appendTranscriptMessage({
-                sessionId,
+        await Promise.all(
+            persistedMessages.map(
+                (message) =>
+                    appendTranscriptMessage({
+                        sessionId,
 
-                id:
-                    message.id,
-                
-                role:
-                    message.role
-                        .toLowerCase() as
-                    "assistant" | "user",
+                        id: message.id,
 
-                content:
-                    message.content,
+                        role:
+                            message.role.toLowerCase() as
+                            "assistant" | "user",
 
-                metadata:
-                    message.metadata
-                        ? message.metadata as any
-                        : undefined,
+                        content:
+                            message.content,
 
-                createdAt:
-                    message.createdAt.toISOString(),
-            });
-        }
+                        metadata:
+                            message.metadata
+                                ? message.metadata as any
+                                : undefined,
+
+                        createdAt:
+                            message.createdAt.toISOString(),
+                    })
+            )
+        );
 
         /*
          * Put the reconstructed active state back into Redis.
@@ -511,12 +509,15 @@ export async function startInterview({
             sessionId
         );
 
-        for (const evaluation of metadata.turnEvaluations ?? []) {
-            await appendTurnEvaluation(
-                sessionId,
-                evaluation
-            );
-        }
+        await Promise.all(
+            (metadata.turnEvaluations ?? []).map(
+                (evaluation) =>
+                    appendTurnEvaluation(
+                        sessionId,
+                        evaluation
+                    )
+            )
+        );
 
         /*
          * The PostgreSQL checkpoint has served its
