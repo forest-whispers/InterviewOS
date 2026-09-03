@@ -88,9 +88,12 @@ export async function abandonInterview({
      * These are intentionally different lifetimes.
      */
 
+    const abandonedAt =
+        new Date();
+
     const runtimeStateExpiresAt =
         new Date(
-            Date.now() +
+            abandonedAt.getTime() +
             INTERVIEW_CONSTANTS.ABANDONED_STATE_TTL_SECONDS *
             1000
         );
@@ -194,6 +197,8 @@ export async function abandonInterview({
 
                 data: {
                     status: "ABANDONED",
+
+                    abandonedAt,
                 },
             });
         }

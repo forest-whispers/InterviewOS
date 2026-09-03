@@ -45,7 +45,8 @@ export async function appendTranscriptMessage({
 
         metadata,
 
-        createdAt: createdAt ? createdAt : new Date().toISOString(),
+        // createdAt: createdAt ? createdAt : new Date().toISOString(),
+        createdAt: createdAt ?? new Date().toISOString(),
     };
 
     await appendToList(

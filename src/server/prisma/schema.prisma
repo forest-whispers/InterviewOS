@@ -209,6 +209,8 @@ model InterviewSession {
 
   startedAt DateTime?
 
+  abandonedAt DateTime?
+
   completedAt DateTime?
 
   createdAt DateTime @default(now())
