@@ -2,6 +2,7 @@ import {
     appendToList,
     getList,
     deleteList,
+    appendManyToList,
 } from "@/server/shared/redis/list";
 
 import { makeKey } from "@/server/shared/redis/keys";
@@ -28,6 +29,17 @@ export async function appendTurnEvaluation(
     await appendToList(
         evaluationKey(sessionId),
         evaluation,
+        INTERVIEW_TTL.TURN_EVALUATIONS
+    );
+}
+
+export async function appendTurnEvaluations(
+    sessionId: string,
+    evaluations: TurnEvaluation[]
+) {
+    await appendManyToList(
+        evaluationKey(sessionId),
+        evaluations,
         INTERVIEW_TTL.TURN_EVALUATIONS
     );
 }

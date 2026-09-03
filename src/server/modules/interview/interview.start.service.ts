@@ -24,9 +24,10 @@ import {
 
 import { INTERVIEW_CONSTANTS } from "./interview.constants";
 import { Prisma } from "@prisma/client";
-import { appendTranscriptMessage, clearTranscript, } from "./transcript/interview.transcript";
+import { appendTranscriptMessage, appendTranscriptMessages, clearTranscript, } from "./transcript/interview.transcript";
 import { TurnEvaluation } from "./evaluation/interview.evaluation.types";
-import { appendTurnEvaluation, clearTurnEvaluations } from "./evaluation/interview.evaluation.redis";
+import { appendTurnEvaluation, appendTurnEvaluations, clearTurnEvaluations } from "./evaluation/interview.evaluation.redis";
+import { TranscriptMessage } from "./transcript/interview.transcript.types";
 
 interface CreateInterviewInput {
     userId: string;
@@ -467,31 +468,58 @@ export async function startInterview({
             sessionId
         );
 
-        await Promise.all(
+        // await Promise.all(
+        //     persistedMessages.map(
+        //         (message) =>
+        //             appendTranscriptMessage({
+        //                 sessionId,
+
+        //                 id: message.id,
+
+        //                 role:
+        //                     message.role.toLowerCase() as
+        //                     "assistant" | "user",
+
+        //                 content:
+        //                     message.content,
+
+        //                 metadata:
+        //                     message.metadata
+        //                         ? message.metadata as any
+        //                         : undefined,
+
+        //                 createdAt:
+        //                     message.createdAt.toISOString(),
+        //             })
+        //     )
+        // );
+
+        const restoredMessages: TranscriptMessage[] =
             persistedMessages.map(
-                (message) =>
-                    appendTranscriptMessage({
-                        sessionId,
+                (message) => ({
+                    id: message.id,
 
-                        id: message.id,
+                    role:
+                        message.role.toLowerCase() as
+                        "assistant" | "user",
 
-                        role:
-                            message.role.toLowerCase() as
-                            "assistant" | "user",
+                    content:
+                        message.content,
 
-                        content:
-                            message.content,
+                    metadata:
+                        message.metadata
+                            ? message.metadata as any
+                            : undefined,
 
-                        metadata:
-                            message.metadata
-                                ? message.metadata as any
-                                : undefined,
+                    createdAt:
+                        message.createdAt.toISOString(),
+                })
+            );
 
-                        createdAt:
-                            message.createdAt.toISOString(),
-                    })
-            )
-        );
+        await appendTranscriptMessages(
+            sessionId,
+            restoredMessages
+            );
 
         /*
          * Put the reconstructed active state back into Redis.
@@ -509,14 +537,19 @@ export async function startInterview({
             sessionId
         );
 
-        await Promise.all(
-            (metadata.turnEvaluations ?? []).map(
-                (evaluation) =>
-                    appendTurnEvaluation(
-                        sessionId,
-                        evaluation
-                    )
-            )
+        // await Promise.all(
+        //     (metadata.turnEvaluations ?? []).map(
+        //         (evaluation) =>
+        //             appendTurnEvaluation(
+        //                 sessionId,
+        //                 evaluation
+        //             )
+        //     )
+        // );
+
+        await appendTurnEvaluations(
+            sessionId,
+            metadata.turnEvaluations ?? []
         );
 
         /*

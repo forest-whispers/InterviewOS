@@ -30,6 +30,39 @@ export async function appendToList<T>(
     }
 }
 
+export async function appendManyToList<T>(
+    key: string,
+    values: T[],
+    ttlSeconds?: number
+): Promise<boolean> {
+    if (values.length === 0) {
+        return true;
+    }
+
+    try {
+        await redis.rpush(
+            key,
+            values
+        );
+
+        if (ttlSeconds) {
+            await redis.expire(
+                key,
+                ttlSeconds
+            );
+        }
+
+        return true;
+    } catch (error) {
+        console.error(
+            `Redis bulk RPUSH failed for key "${key}"`,
+            error
+        );
+
+        return false;
+    }
+}
+
 export async function getList<T>(
     key: string
 ): Promise<T[]> {

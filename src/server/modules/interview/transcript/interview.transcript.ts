@@ -4,6 +4,7 @@ import {
     appendToList,
     getList,
     deleteList,
+    appendManyToList,
 } from "@/server/shared/redis/list";
 
 import { INTERVIEW_TTL } from "@/server/shared/redis/ttl";
@@ -56,6 +57,17 @@ export async function appendTranscriptMessage({
     );
 
     return message;
+}
+
+export async function appendTranscriptMessages(
+    sessionId: string,
+    messages: TranscriptMessage[]
+) {
+    await appendManyToList(
+        transcriptKey(sessionId),
+        messages,
+        INTERVIEW_TTL.TRANSCRIPT
+    );
 }
 
 export async function getTranscript(
